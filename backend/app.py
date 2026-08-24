@@ -11,6 +11,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    from routes.application_route import application_bp
+    app.register_blueprint(application_bp)
     db.init_app(app)
 
     with app.app_context():
