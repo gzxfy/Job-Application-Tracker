@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Flask / SQLite
+backend/app.db
+*.db
+
+# Env / secrets
+.env
+
+# Editor
+.vscode/
