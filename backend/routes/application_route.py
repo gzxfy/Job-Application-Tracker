@@ -97,11 +97,11 @@ def update_application(application_id):
     })
 
 @application_bp.route('/applications/delete/<int:application_id>', methods=['DELETE'])
-def delete_application(application_id):
+def delete_application(application_id, method="DELETE"):
     success = app_services.delete_application(application_id)
     if not success:
-        return jsonify({'error': 'Application not found'}), 404
-    return jsonify({'message': 'Application deleted successfully'})
+        return jsonify({'success': False, 'error': 'Application not found'}), 404
+    return jsonify({'success': True, 'message': 'Application deleted successfully'})
 
 @application_bp.route('/applications/create', methods=['POST'])
 def create_application():

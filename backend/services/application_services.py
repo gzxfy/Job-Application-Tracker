@@ -1,5 +1,5 @@
-from models.Application_model import Application
-from extensions import db
+from backend.models.Application_model import Application
+from backend.extensions import db
 
 def get_application_by_id(application_id):
     return Application.query.get(application_id)
