@@ -1,5 +1,5 @@
 from datetime import datetime
-from extensions import db
+from backend.extensions import db
 
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True) 

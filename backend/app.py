@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from extensions import db
+from backend.extensions import db
 from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,9 +12,11 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
+    from backend.routes.application_route import application_bp
+    app.register_blueprint(application_bp)
 
     with app.app_context():
-        import models
+        from backend.models.Application_model import Application  # noqa: F401 registers model before create_all
         db.create_all()
 
     return app
