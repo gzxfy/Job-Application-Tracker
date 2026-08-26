@@ -3,6 +3,14 @@ import backend.services.application_services as app_services
 
 application_bp = Blueprint('application', __name__)
 
+# Global variable to store the current application being updated
+# This is a temporary solution and should be replaced with a more robust state management approach in the future.
+
+jobs = [
+    {"id": 1, "company": "Company A", "position": "Software Engineer", "status": "Applied", "notes": "First application", "applied_date": "2024-06-01"},
+    {"id": 2, "company": "Company B", "position": "Data Scientist", "status": "Interview", "notes": "Second application", "applied_date": "2024-06-05"},
+]
+
 @application_bp.route('/applications', methods=['GET'])
 def get_applications():
     applications = app_services.get_all_applications()
@@ -27,6 +35,38 @@ def get_application(application_id):
         'status': app.status,
         'notes': app.notes,
         'applied_date': app.applied_date
+    })
+
+@application_bp.route('/applications/create', methods=['POST'])
+def create_application():
+    data = request.get_json()
+    try:
+        company = data['company']
+        position = data['position']
+        status = data.get('status', 'Applied')
+        notes = data.get('notes')
+        salary = data.get('salary')
+        deadline = data.get('deadline')
+        job_link = data.get('job_link')
+        days_until_deadline = data.get('days_until_deadline')
+        contact_name = data.get('contact_name')
+        contact_email = data.get('contact_email')
+    except KeyError:
+        return jsonify({'error': 'Missing required fields'}), 400
+    application = app_services.create_application(company, position, status, notes, salary, deadline, job_link, days_until_deadline, contact_name, contact_email)
+    return jsonify({
+        'id': application.id,
+        'company': application.company,
+        'position': application.position,
+        'status': application.status,
+        'notes': application.notes,
+        'salary': application.salary,
+        'deadline': application.deadline,
+        'job_link': application.job_link,
+        'days_until_deadline': application.days_until_deadline,
+        'contact_name': application.contact_name,
+        'contact_email': application.contact_email,
+        'applied_date': application.applied_date
     })
 
 @application_bp.route('/applications/status/<string:status>', methods=['GET'])
@@ -102,20 +142,3 @@ def delete_application(application_id, method="DELETE"):
     if not success:
         return jsonify({'success': False, 'error': 'Application not found'}), 404
     return jsonify({'success': True, 'message': 'Application deleted successfully'})
-
-@application_bp.route('/applications/create', methods=['POST'])
-def create_application():
-    data = request.get_json()
-    company = data.get('company')
-    position = data.get('position')
-    status = data.get('status', 'Applied')
-    notes = data.get('notes')
-    application = app_services.create_application(company, position, status, notes)
-    return jsonify({
-        'id': application.id,
-        'company': application.company,
-        'position': application.position,
-        'status': application.status,
-        'notes': application.notes,
-        'applied_date': application.applied_date
-    })

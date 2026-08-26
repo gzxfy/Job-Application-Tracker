@@ -12,6 +12,7 @@ class Application(db.Model):
     job_link = db.Column(db.String(200), nullable=True)
     days_until_deadline = db.Column(db.Integer, nullable=True)
     contact_name = db.Column(db.String(100), nullable=True)
+    contact_email = db.Column(db.String(100), nullable=True)
 
     applied_date = db.Column(db.DateTime, default=datetime.utcnow)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
