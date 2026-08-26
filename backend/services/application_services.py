@@ -52,3 +52,5 @@ def get_applications_by_position(position):
 
 def get_applications_by_applied_date(applied_date):
     return Application.query.filter_by(applied_date=applied_date).all()
+
+# Additional functions for filtering by salary, deadline, job_link, and contact_name will be implemented in the future as needed.

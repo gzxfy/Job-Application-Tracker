@@ -13,19 +13,36 @@
         <div class="database-container">
             <!-- header row -->
             <div class="database-row database-header">
-                <div class="database-cell">Company</div> 
-                <svg width="800px" height="800px" viewBox="0 -8 1040 1040" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"></svg>
-                <div class="database-cell">Position</div>
                 <div class="database-cell">Status</div>
+                <div class="database-cell">Company</div> 
+                <!-- <svg width="800px" height="800px" viewBox="0 -8 1040 1040" class="icon"  version="1.1" xmlns="http://www.w3.org/2000/svg"></svg> -->
+                <div class="database-cell">Position</div>
+                <div class="database-cell">Salary</div>
+                <div class="database-cell">Deadline</div>
+                <div class="database-cell">Days Until Deadline</div>
+                <div class="database-cell">Job Link</div>
+                <div class="database-cell">Contact Name</div>
                 <div class="database-cell">Date Applied</div>
             </div>
 
             <!-- data rows -->
-            <div class="database-row">
+            <div class="database-row database-data">
+                <div class="database-cell">
+                    <select name="status" id="status">
+                        <option value="applied">Applied</option>
+                        <option value="interview">Interview</option>
+                        <option value="offer">Offer</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
                 <div class="database-cell">Example Company</div>
                 <div class="database-cell">Example Position</div>
-                <div class="database-cell">Applied</div>
+                <div class="database-cell">$100,000</div>
                 <div class="database-cell">2024-06-15</div>
+                <div class="database-cell">10</div>
+                <div class="database-cell"><a href="https://example.com">Job Link</a></div>
+                <div class="database-cell">John Doe</div>
+                <div class="database-cell">2024-06-01</div>
             </div>
         </div>
     </main>

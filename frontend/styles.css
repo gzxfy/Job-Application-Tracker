@@ -22,7 +22,7 @@ h2 {
 
 .database-row {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     width: 100%;
     border-collapse: collapse;
     padding: 1px;
@@ -33,5 +33,24 @@ h2 {
     align-items: center;
     justify-content: center;
     padding: 5px;
-    border: 1px solid gray;
 }
+
+.database-data {
+    border: 1px solid gray;
+    font-size: 1.1em;
+}
+
+.database-header {
+    background-color: #333;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+select {
+    background-color: #191919;
+    color: white;
+    border: 1px solid gray;
+    padding: 5px;
+    font-size: 1em;
+}
+/* Need to add coloring for applied, interview, offer, and rejected options */
