@@ -12,13 +12,14 @@ def validate_email(email):
 
 def validate_password(password):
     password = password.strip()  # Remove leading and trailing whitespace
-    password_strength = zxcvbn(password)
-
-    if password_strength['score'] < 3:
-        raise ValueError("Password is too weak")
 
     if len(password) < 8:
         raise ValueError("Password must be at least 8 characters long")
+
+    password_strength = zxcvbn(password)
+    if password_strength['score'] < 3:
+        raise ValueError("Password is too weak")
+
     if not re.search(r'[A-Z]', password):
         raise ValueError("Password must contain at least one uppercase letter")
 
