@@ -27,7 +27,18 @@ export default function Registration() {
                 body: JSON.stringify(payload)
             });
 
-            const result = await response.json();
+            {/* This is here for debugging for the back */}
+            const text = await response.text();
+            let result = {};
+
+            try {
+                result = text ? JSON.parse(text) : {};
+            } catch {
+                console.error('Backend did not return valid JSON:', text);
+                setErrorMessage('Server error. Please try again.');
+                setSuccessMessage('');
+                return;
+            }
 
             if (!response.ok) {
                 setErrorMessage(result.error || "Registration failed");
@@ -43,8 +54,9 @@ export default function Registration() {
                 confirm_password: ""
             });
         } catch (error) {
-            setErrorMessage(error.message);
-            setSuccessMessage()
+            console.error('Failed to register:', error);
+            setErrorMessage(error.message || 'Something went wrong. Please try again.');
+            setSuccessMessage('');
         }
     }
 
