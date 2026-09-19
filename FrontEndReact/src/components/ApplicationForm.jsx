@@ -52,7 +52,7 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleSubmit} className="application-form">
 			<FormField label="Company" id="company_id">
 				<select id="company_id" name="company_id" value={formData.company_id} onChange={handleChange} required>
 					<option value="1">Demo Company</option>
@@ -92,11 +92,19 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 				<input id="date_applied" name="date_applied" type="date" value={formData.date_applied} onChange={handleChange} required />
 			</FormField>
 
-			{message && <p role="alert">{message}</p>}
-			<button type="button" onClick={onCancel}>Cancel</button>
-			<button type="submit" disabled={loading}>
-				{loading ? "Adding..." : "Add Application"}
-			</button>
+			{message && (
+				<p className="mb-3 font-sans text-sm text-error" role="alert">
+					{message}
+				</p>
+			)}
+			<div className="application-form-actions">
+				<button type="button" onClick={onCancel}>
+					Cancel
+				</button>
+				<button type="submit" disabled={loading}>
+					{loading ? "Saving…" : "Save Job"}
+				</button>
+			</div>
 		</form>
 	);
 }
