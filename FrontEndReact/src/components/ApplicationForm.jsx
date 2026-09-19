@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FormField from "./FormField";
 
+// Collects a new application and sends it to the API.
 export default function ApplicationForm({ onCancel, onCreated }) {
 	const [formData, setFormData] = useState({
 		company_id: "1",
@@ -14,11 +15,13 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
 
+	// Keeps each input in sync with the form state.
 	function handleChange(event) {
 		const { name, value } = event.target;
 		setFormData((currentData) => ({ ...currentData, [name]: value }));
 	}
 
+	// Saves the application before telling the parent page to navigate or refresh.
 	async function handleSubmit(event) {
 		event.preventDefault();
 		setLoading(true);

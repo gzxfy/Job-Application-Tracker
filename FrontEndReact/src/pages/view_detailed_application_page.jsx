@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+// Loads and displays one application selected from the dashboard.
 export default function ViewDetailedApplication() {
     const { applicationId } = useParams();
     const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function ViewDetailedApplication() {
     const [application, setApplication] = useState(null);
     const [error, setError] = useState("");
 
+    // Fetches the application identified by the URL parameter.
     useEffect(() => {
         async function loadApplication() {
             try {
@@ -26,6 +28,7 @@ export default function ViewDetailedApplication() {
         loadApplication();
     }, [applicationId]);
 
+    // Deletes the current application and returns to the dashboard.
     async function handleDelete() {
     const response = await fetch(
       `/api/applications/delete/${applicationId}`,

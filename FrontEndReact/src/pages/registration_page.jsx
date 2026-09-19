@@ -4,6 +4,7 @@ import AuthLayout from "../components/AuthLayout";
 import InputField from "../components/InputField";
 import AuthButton from "../components/AuthButton";
 
+// Handles account creation before sending the user to the dashboard.
 export default function Registration() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export default function Registration() {
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Updates one field and clears its previous validation message.
   function updateField(field, value) {
     setFormData({ ...formData, [field]: value });
     setFieldErrors((prev) => {
@@ -29,6 +31,7 @@ export default function Registration() {
     setErrorMessage("");
   }
 
+  // Validates the form and creates the account through Flask.
   async function handleRegistration(event) {
     event.preventDefault();
 

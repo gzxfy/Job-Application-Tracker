@@ -1,3 +1,4 @@
+// Disables the submit button and changes its label while a request is pending.
 export default function AuthButton({
   children,
   loading = false,

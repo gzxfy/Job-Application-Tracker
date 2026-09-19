@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateApplication from "./pages/create_application_page";
 import ViewDetailedApplication from "./pages/view_detailed_application_page";
 
+// Defines the client-side routes for authentication and applications.
 function App() {
   return (
     <div>

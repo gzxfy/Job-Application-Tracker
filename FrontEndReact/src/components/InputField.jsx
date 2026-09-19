@@ -1,3 +1,4 @@
+// Renders a labeled input and its optional validation message.
 export default function InputField({
   id,
   label,

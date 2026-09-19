@@ -1,3 +1,4 @@
+// Provides the shared two-column layout for authentication pages.
 export default function AuthLayout({ title, children }) {
   return (
     <div className="flex min-h-svh w-full flex-col md:flex-row">

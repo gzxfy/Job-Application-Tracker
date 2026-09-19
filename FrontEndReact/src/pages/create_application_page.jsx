@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import ApplicationForm from "../components/ApplicationForm";
 
+// Provides the full-page version of the reusable application form.
 export default function CreateApplication() {
   const navigate = useNavigate();
 

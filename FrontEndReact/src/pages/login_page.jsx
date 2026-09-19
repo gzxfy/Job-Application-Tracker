@@ -4,6 +4,7 @@ import AuthLayout from "../components/AuthLayout";
 import InputField from "../components/InputField";
 import AuthButton from "../components/AuthButton";
 
+// Handles login and sends authenticated users to the dashboard.
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,6 +20,7 @@ export default function Login() {
     location.state?.successMessage || ""
   );
 
+  // Sends credentials to Flask and handles success or validation errors.
   async function handleLogin(event) {
     event.preventDefault();
     const payload = {
