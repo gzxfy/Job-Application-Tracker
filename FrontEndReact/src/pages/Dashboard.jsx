@@ -1,5 +1,36 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 export default function Dashboard() {
+    const [applications, setApplications] = useState([]);
+    const [error, setError] = useState("");
+
+    useEffect(() =>{
+        fetch("/api/applications")
+        .then(async(response) => {
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Could not load applications");
+            }
+
+            return data
+        })
+        .then(setApplications)
+        .catch((error) => setError(error.message));
+    }, []);
+
     return (
-        <h1>Dashboard</h1>
+        <main>
+            <h1>My Applications</h1>
+            {error && <p>{error}</p>}
+            {applications.map((application) => (
+                <div key={application.id}>
+                    <h2>{application.position}</h2>
+                    <p>Status: {application.status}</p>
+                </div>
+            ))}
+            <p><Link to="/applications/new">Add Application</Link></p>
+        </main>
     )
 }

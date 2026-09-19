@@ -1,5 +1,6 @@
 from backend.models.Application_model import Application
 from backend.extensions import db
+from datetime import datetime
 
 def get_application_by_id(application_id, user_id=None):
     query = Application.query.filter_by(id=application_id)
@@ -10,14 +11,19 @@ def get_application_by_id(application_id, user_id=None):
 def get_all_applications(user_id):
     return Application.query.filter_by(user_id=user_id).all()
 
-def create_application(user_id, company_id, position, job_url=None, status="Applied"):
+def create_application(user_id, company_id, position, job_url=None, status="Applied", date_applied=None):
+    if date_applied:
+        date_applied = datetime.strptime(date_applied, "%Y-%m-%d")
+
     application = Application(
         user_id=user_id,
         company_id=company_id,
         position=position,
         status=status,
         job_url=job_url,
+        date_applied=date_applied
     )
+
     db.session.add(application)
     db.session.commit()
     return application

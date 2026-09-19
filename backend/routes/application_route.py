@@ -61,6 +61,7 @@ def create_application():
         position=position,
         job_url=data.get("job_url"),
         status=data.get("status", "Applied"),
+        date_applied=data.get("date_applied"),
     )
     return jsonify(application_response(application)), 201
 
