@@ -1,28 +1,27 @@
-
 import { useState } from "react"
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom"
 
-export default function Registration() {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        confirm_password: ""
-    });
+export default function Login() {
+    const location = useLocation();
+    const [loginData, setLoginData] = useState({
+        email: '',
+        password: ''
+    })
 
     const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState(
+        location.state?.successMessage || ""
+    );
 
-    async function handleRegistration(event) {
+     async function handleLogin(event) {
         event.preventDefault();
         const payload = {
-            email: formData.email,
-            password: formData.password,
-            confirm_password: formData.confirm_password
+            email: loginData.email,
+            password: loginData.password,
         };
     
         try{
-            const response = await fetch('/api/register', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -51,15 +50,9 @@ export default function Registration() {
 
             setSuccessMessage(result.message || "User registered successfully");
             setErrorMessage("");
-            setFormData({
+            setLoginData({
                 email: "",
                 password: "",
-                confirm_password: ""
-            });
-            navigate("/login", {
-                state: {
-                    successMessage: result.message || "Account created successfully. Please log in."
-                }
             });
         } catch (error) {
             console.error('Failed to register:', error);
@@ -71,37 +64,29 @@ export default function Registration() {
     return (
         <div>
             <main>
-                <h1>Create an Account</h1>
+                <h1>Login</h1>
                 {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
                 {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-                <form onSubmit={handleRegistration} className="registration-form">
+                <form onSubmit={handleLogin} className="registration-form">
 
                     {/* Email Field */}
                     <div className="form-group">
                         <label htmlFor="email">Enter Your Email: </label>
-                        <input type="email" id="email" className="auth-box" name="email" value={formData.email} 
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        <input type="email" id="email" className="auth-box" name="email" value={loginData.email} 
+                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                         required />
                     </div>
 
                     {/* Password Field */}
                     <div className="form-group">
                         <label htmlFor="password">Enter a password</label>
-                        <input type="password" id="password" className="auth-box"  name="password" value={formData.password} 
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        <input type="password" id="password" className="auth-box"  name="password" value={loginData.password} 
+                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         required />
                     </div>
 
-                    {/* Confirm Password Field */}
-                    <div className="form-group">
-                        <label htmlFor="confirm_password">Confirm Your Password: </label>
-                        <input type="password" id="confirm-password" className="auth-box"  name="confirm_password" value={formData.confirm_password} 
-                        onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
-                        required />
-                    </div>
-
-                    <button type="submit">Register</button>
-                    <button type="button"><Link to="/login">Already have an account? Login</Link> </button>
+                    <button type="submit">Login</button>
+                    <button type="button"><Link to="/register">Don't have an Account</Link> </button>
                 </form>
             </main>
         </div>
