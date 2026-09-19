@@ -1,4 +1,4 @@
-from backend.app import create_app
+from app import create_app
 
 def create_test_application(client):
     return client.post('/applications/create', json={

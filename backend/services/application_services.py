@@ -7,12 +7,18 @@ def get_application_by_id(application_id):
 def get_all_applications():
     return Application.query.all()
 
-def create_application(company, position, status='Applied', notes=None):
+def create_application(company, position, status='Applied', notes=None, salary=None, deadline=None, job_link=None, days_until_deadline=None, contact_name=None, contact_email=None):
     application = Application(
         company=company,
         position=position,
         status=status,
-        notes=notes
+        notes=notes,
+        salary=salary,
+        deadline=deadline,
+        job_link=job_link,
+        days_until_deadline=days_until_deadline,
+        contact_name=contact_name,
+        contact_email=contact_email
     )
     db.session.add(application)
     db.session.commit()
@@ -52,3 +58,5 @@ def get_applications_by_position(position):
 
 def get_applications_by_applied_date(applied_date):
     return Application.query.filter_by(applied_date=applied_date).all()
+
+# Additional functions for filtering by salary, deadline, job_link, and contact_name will be implemented in the future as needed.
