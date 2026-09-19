@@ -54,7 +54,7 @@ export default function Registration() {
         body: JSON.stringify(payload),
       });
 
-      {/* This is here for debugging for the back */}
+      {/* This is here for debugging for the backEnd */}
       const text = await response.text();
       let result = {};
 
@@ -81,7 +81,8 @@ export default function Registration() {
         password: "",
         confirm_password: "",
       });
-      navigate("/login", {
+
+      navigate("/Dashboard", {
         state: {
           successMessage:
             result.message || "Account created successfully. Please log in.",

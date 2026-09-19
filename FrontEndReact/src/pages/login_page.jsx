@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 import InputField from "../components/InputField";
 import AuthButton from "../components/AuthButton";
 
 export default function Login() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -59,6 +61,8 @@ export default function Login() {
         email: "",
         password: "",
       });
+      
+      navigate("/dashboard")
     } catch (error) {
       console.error("Failed to login:", error);
       setErrorMessage(

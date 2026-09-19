@@ -1,5 +1,6 @@
 import backend.services.Authenication_services as auth_service
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
+from backend.models.User_model import User
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -13,8 +14,12 @@ def register():
     confirm_password = data.get('confirm_password', '').strip()  # Remove leading/trailing whitespace from confirm_password
 
     try:
-        user = auth_service.register_user(email, password, confirm_password)
-        return jsonify({'message': 'User registered successfully', 'user': {'id': user.id, 'email': user.email}}), 201
+        user = auth_service.register_user(name, email, password, confirm_password)
+        session["user_id"] = user.id
+        session["user_email"] = user.email
+        return jsonify({'message': 'User registered successfully', 
+                        'user': {'id': user.id, 'email': user.email}
+                        }), 200
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 
@@ -29,3 +34,41 @@ def login():
         return jsonify({'message': 'User logged in successfully', 'user': {'id': user.id, 'email': user.email}}), 200
     except ValueError as e:
         return jsonify({'error': str(e)}), 401
+
+
+@auth_bp.route('/api/me', methods=['GET'])
+def current_user():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Not logged in"}), 401
+
+    user = User.query.get(user_id)
+
+    return jsonify({
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email
+        }
+    }), 200
+
+
+@auth_bp.route('/api/account', methods=['GET'])
+def account():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Please log in"}), 401
+
+    user = User.query.get(user_id)
+
+    return jsonify({
+        "message": "This is your account",
+        "email": user.email
+    })
+
+@auth_bp.route('/api/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return jsonify({"message": "Logged out successfully"}), 200

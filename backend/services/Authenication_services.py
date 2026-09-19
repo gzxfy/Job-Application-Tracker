@@ -3,7 +3,7 @@ from backend.models.User_model import User
 from backend.extensions import db
 from backend.utils.validation_helpers import validate_email, validate_password
 
-def register_user(email, password, confirm_password):
+def register_user(name, email, password, confirm_password):
     validate_email(email)
     validate_password(password)
     confirm_password = confirm_password.strip()  # Remove leading/trailing whitespace from confirm_password
@@ -12,9 +12,12 @@ def register_user(email, password, confirm_password):
 
     if User.query.filter_by(email=email).first():
         raise ValueError("Email already exists")
+
+    if not name:
+        raise ValueError("Must put a name")
     
     hashed_password = generate_password_hash(password)
-    new_user = User(email=email, password=hashed_password)
+    new_user = User(name=name, email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     return new_user
