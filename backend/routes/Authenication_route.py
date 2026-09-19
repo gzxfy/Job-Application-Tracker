@@ -7,6 +7,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json() or {}
+    name = data.get('name', '').strip()
     email = data.get('email', '').strip()  # Remove leading/trailing whitespace from email
     password = data.get('password', '').strip()  # Remove leading/trailing whitespace from password
     confirm_password = data.get('confirm_password', '').strip()  # Remove leading/trailing whitespace from confirm_password

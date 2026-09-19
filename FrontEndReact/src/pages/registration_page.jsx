@@ -1,109 +1,178 @@
-
-import { useState } from "react"
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AuthLayout from "../components/AuthLayout";
+import InputField from "../components/InputField";
+import AuthButton from "../components/AuthButton";
 
 export default function Registration() {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        confirm_password: ""
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirm_password: "",
+  });
+
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function updateField(field, value) {
+    setFormData({ ...formData, [field]: value });
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
     });
+    setErrorMessage("");
+  }
 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+  async function handleRegistration(event) {
+    event.preventDefault();
 
-    async function handleRegistration(event) {
-        event.preventDefault();
-        const payload = {
-            email: formData.email,
-            password: formData.password,
-            confirm_password: formData.confirm_password
-        };
-    
-        try{
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            {/* This is here for debugging for the back */}
-            const text = await response.text();
-            let result = {};
-
-            try {
-                result = text ? JSON.parse(text) : {};
-            } catch {
-                console.error('Backend did not return valid JSON:', text);
-                setErrorMessage('Server error. Please try again.');
-                setSuccessMessage('');
-                return;
-            }
-
-            if (!response.ok) {
-                setErrorMessage(result.error || "Registration failed");
-                setSuccessMessage("");
-                return;
-            }
-
-            setSuccessMessage(result.message || "User registered successfully");
-            setErrorMessage("");
-            setFormData({
-                email: "",
-                password: "",
-                confirm_password: ""
-            });
-            navigate("/login", {
-                state: {
-                    successMessage: result.message || "Account created successfully. Please log in."
-                }
-            });
-        } catch (error) {
-            console.error('Failed to register:', error);
-            setErrorMessage(error.message || 'Something went wrong. Please try again.');
-            setSuccessMessage('');
-        }
+    if (formData.password !== formData.confirm_password) {
+      setFieldErrors({ confirm_password: "Passwords don't match" });
+      return;
     }
 
-    return (
-        <div>
-            <main>
-                <h1>Create an Account</h1>
-                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-                {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-                <form onSubmit={handleRegistration} className="registration-form">
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      confirm_password: formData.confirm_password,
+    };
 
-                    {/* Email Field */}
-                    <div className="form-group">
-                        <label htmlFor="email">Enter Your Email: </label>
-                        <input type="email" id="email" className="auth-box" name="email" value={formData.email} 
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required />
-                    </div>
+    setLoading(true);
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-                    {/* Password Field */}
-                    <div className="form-group">
-                        <label htmlFor="password">Enter a password</label>
-                        <input type="password" id="password" className="auth-box"  name="password" value={formData.password} 
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        required />
-                    </div>
+      {/* This is here for debugging for the back */}
+      const text = await response.text();
+      let result = {};
 
-                    {/* Confirm Password Field */}
-                    <div className="form-group">
-                        <label htmlFor="confirm_password">Confirm Your Password: </label>
-                        <input type="password" id="confirm-password" className="auth-box"  name="confirm_password" value={formData.confirm_password} 
-                        onChange={(e) => setFormData({ ...formData, confirm_password: e.target.value })}
-                        required />
-                    </div>
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch {
+        console.error("Backend did not return valid JSON:", text);
+        setErrorMessage("Server error. Please try again.");
+        setSuccessMessage("");
+        return;
+      }
 
-                    <button type="submit">Register</button>
-                    <button type="button"><Link to="/login">Already have an account? Login</Link> </button>
-                </form>
-            </main>
+      if (!response.ok) {
+        setErrorMessage(result.error || "Registration failed");
+        setSuccessMessage("");
+        return;
+      }
+
+      setSuccessMessage(result.message || "User registered successfully");
+      setErrorMessage("");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirm_password: "",
+      });
+      navigate("/login", {
+        state: {
+          successMessage:
+            result.message || "Account created successfully. Please log in.",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to register:", error);
+      setErrorMessage(
+        error.message || "Something went wrong. Please try again."
+      );
+      setSuccessMessage("");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <AuthLayout title="Create an account">
+      {errorMessage && (
+        <p className="mb-4 text-left font-sans text-sm text-error">
+          {errorMessage}
+        </p>
+      )}
+      {successMessage && (
+        <p className="mb-4 text-left font-sans text-sm text-accent">
+          {successMessage}
+        </p>
+      )}
+
+      <form onSubmit={handleRegistration} className="text-left">
+        <InputField
+          id="name"
+          label="Name"
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={(e) => updateField("name", e.target.value)}
+          required
+          autoComplete="name"
+        />
+
+        <InputField
+          id="email"
+          label="Email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={(e) => updateField("email", e.target.value)}
+          required
+          autoComplete="email"
+        />
+
+        <InputField
+          id="password"
+          label="Password"
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={(e) => updateField("password", e.target.value)}
+          required
+          autoComplete="new-password"
+        />
+
+        <InputField
+          id="confirm-password"
+          label="Confirm password"
+          type="password"
+          name="confirm_password"
+          value={formData.confirm_password}
+          onChange={(e) => updateField("confirm_password", e.target.value)}
+          error={fieldErrors.confirm_password}
+          required
+          autoComplete="new-password"
+        />
+
+        <div className="mt-2">
+          <AuthButton loading={loading} loadingLabel="Creating account…">
+            Create account
+          </AuthButton>
         </div>
-    )
+
+        <p className="mt-6 font-sans text-sm text-text/80">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-medium text-accent underline-offset-2 hover:underline"
+          >
+            Log in
+          </Link>
+        </p>
+      </form>
+    </AuthLayout>
+  );
 }
