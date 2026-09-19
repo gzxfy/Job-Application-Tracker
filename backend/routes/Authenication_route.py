@@ -31,6 +31,8 @@ def login():
 
     try:
         user = auth_service.authenticate_user(email, password)
+        session["user_id"] = user.id
+        session["user_email"] = user.email
         return jsonify({'message': 'User logged in successfully', 'user': {'id': user.id, 'email': user.email}}), 200
     except ValueError as e:
         return jsonify({'error': str(e)}), 401

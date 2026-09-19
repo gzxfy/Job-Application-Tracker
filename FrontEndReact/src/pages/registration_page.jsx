@@ -82,7 +82,7 @@ export default function Registration() {
         confirm_password: "",
       });
 
-      navigate("/Dashboard", {
+            navigate("/dashboard", {
         state: {
           successMessage:
             result.message || "Account created successfully. Please log in.",

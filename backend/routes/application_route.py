@@ -1,144 +1,96 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request, session
 import backend.services.application_services as app_services
 
-application_bp = Blueprint('application', __name__)
 
-# Global variable to store the current application being updated
-# This is a temporary solution and should be replaced with a more robust state management approach in the future.
+application_bp = Blueprint("application", __name__)
 
-jobs = [
-    {"id": 1, "company": "Company A", "position": "Software Engineer", "status": "Applied", "notes": "First application", "applied_date": "2024-06-01"},
-    {"id": 2, "company": "Company B", "position": "Data Scientist", "status": "Interview", "notes": "Second application", "applied_date": "2024-06-05"},
-]
 
-@application_bp.route('/applications', methods=['GET'])
+def logged_in_user_id():
+    return session.get("user_id")
+
+
+def application_response(application):
+    return {
+        "id": application.id,
+        "user_id": application.user_id,
+        "company_id": application.company_id,
+        "position": application.position,
+        "job_url": application.job_url,
+        "status": application.status,
+        "date_applied": application.date_applied,
+    }
+
+
+@application_bp.route("/api/applications", methods=["GET"])
 def get_applications():
-    applications = app_services.get_all_applications()
-    return jsonify([{
-        'id': app.id,
-        'company': app.company,
-        'position': app.position,
-        'status': app.status,
-        'notes': app.notes,
-        'applied_date': app.applied_date
-    } for app in applications])
+    user_id = logged_in_user_id()
+    if not user_id:
+        return jsonify({"error": "Please log in"}), 401
 
-@application_bp.route('/applications/<int:application_id>', methods=['GET'])
+    applications = app_services.get_all_applications(user_id)
+    return jsonify([application_response(application) for application in applications])
+
+
+@application_bp.route("/api/applications/<int:application_id>", methods=["GET"])
 def get_application(application_id):
-    app = app_services.get_application_by_id(application_id)
-    if not app:
-        return jsonify({'error': 'Application not found'}), 404
-    return jsonify({
-        'id': app.id,
-        'company': app.company,
-        'position': app.position,
-        'status': app.status,
-        'notes': app.notes,
-        'applied_date': app.applied_date
-    })
+    user_id = logged_in_user_id()
+    if not user_id:
+        return jsonify({"error": "Please log in"}), 401
 
-@application_bp.route('/applications/create', methods=['POST'])
-def create_application():
-    data = request.get_json()
-    try:
-        company = data['company']
-        position = data['position']
-        status = data.get('status', 'Applied')
-        notes = data.get('notes')
-        salary = data.get('salary')
-        deadline = data.get('deadline')
-        job_link = data.get('job_link')
-        days_until_deadline = data.get('days_until_deadline')
-        contact_name = data.get('contact_name')
-        contact_email = data.get('contact_email')
-    except KeyError:
-        return jsonify({'error': 'Missing required fields'}), 400
-    application = app_services.create_application(company, position, status, notes, salary, deadline, job_link, days_until_deadline, contact_name, contact_email)
-    return jsonify({
-        'id': application.id,
-        'company': application.company,
-        'position': application.position,
-        'status': application.status,
-        'notes': application.notes,
-        'salary': application.salary,
-        'deadline': application.deadline,
-        'job_link': application.job_link,
-        'days_until_deadline': application.days_until_deadline,
-        'contact_name': application.contact_name,
-        'contact_email': application.contact_email,
-        'applied_date': application.applied_date
-    })
-
-@application_bp.route('/applications/status/<string:status>', methods=['GET'])
-def get_applications_by_status(status):
-    applications = app_services.get_applications_by_status(status)
-    return jsonify([{
-        'id': app.id,
-        'company': app.company,
-        'position': app.position,
-        'status': app.status,
-        'notes': app.notes,
-        'applied_date': app.applied_date
-    } for app in applications])
-
-@application_bp.route('/applications/company/<string:company>', methods=['GET'])
-def get_applications_by_company(company):
-    applications = app_services.get_applications_by_company(company)
-    return jsonify([{
-        'id': app.id,
-        'company': app.company,
-        'position': app.position,
-        'status': app.status,
-        'notes': app.notes,
-        'applied_date': app.applied_date
-    } for app in applications])
-
-@application_bp.route('/applications/position/<string:position>', methods=['GET'])
-def get_applications_by_position(position):
-    applications = app_services.get_applications_by_position(position)
-    return jsonify([{
-        'id': app.id,
-        'company': app.company,
-        'position': app.position,
-        'status': app.status,
-        'notes': app.notes,
-        'applied_date': app.applied_date
-    } for app in applications])
-
-@application_bp.route('/applications/applied_date/<string:applied_date>', methods=['GET'])
-def get_applications_by_applied_date(applied_date):
-    applications = app_services.get_applications_by_applied_date(applied_date)
-    return jsonify([{
-        'id': app.id,
-        'company': app.company,
-        'position': app.position,
-        'status': app.status,
-        'notes': app.notes,
-        'applied_date': app.applied_date
-    } for app in applications])
-
-@application_bp.route('/applications/update/<int:application_id>', methods=['PUT'])
-def update_application(application_id):
-    data = request.get_json()
-    company = data.get('company')
-    position = data.get('position')
-    status = data.get('status')
-    notes = data.get('notes')
-    application = app_services.update_application(application_id, company, position, status, notes)
+    application = app_services.get_application_by_id(application_id, user_id)
     if not application:
-        return jsonify({'error': 'Application not found'}), 404
-    return jsonify({
-        'id': application.id,
-        'company': application.company,
-        'position': application.position,
-        'status': application.status,
-        'notes': application.notes,
-        'applied_date': application.applied_date
-    })
+        return jsonify({"error": "Application not found"}), 404
+    return jsonify(application_response(application))
 
-@application_bp.route('/applications/delete/<int:application_id>', methods=['DELETE'])
-def delete_application(application_id, method="DELETE"):
-    success = app_services.delete_application(application_id)
-    if not success:
-        return jsonify({'success': False, 'error': 'Application not found'}), 404
-    return jsonify({'success': True, 'message': 'Application deleted successfully'})
+
+@application_bp.route("/api/applications/create", methods=["POST"])
+def create_application():
+    user_id = logged_in_user_id()
+    if not user_id:
+        return jsonify({"error": "Please log in"}), 401
+
+    data = request.get_json() or {}
+    company_id = data.get("company_id")
+    position = data.get("position")
+    if company_id is None or not position:
+        return jsonify({"error": "company_id and position are required"}), 400
+
+    application = app_services.create_application(
+        user_id=user_id,
+        company_id=company_id,
+        position=position,
+        job_url=data.get("job_url"),
+        status=data.get("status", "Applied"),
+    )
+    return jsonify(application_response(application)), 201
+
+
+@application_bp.route("/api/applications/update/<int:application_id>", methods=["PUT"])
+def update_application(application_id):
+    user_id = logged_in_user_id()
+    if not user_id:
+        return jsonify({"error": "Please log in"}), 401
+
+    data = request.get_json() or {}
+    application = app_services.update_application(
+        application_id=application_id,
+        user_id=user_id,
+        company_id=data.get("company_id"),
+        position=data.get("position"),
+        job_url=data.get("job_url"),
+        status=data.get("status"),
+    )
+    if not application:
+        return jsonify({"error": "Application not found"}), 404
+    return jsonify(application_response(application))
+
+
+@application_bp.route("/api/applications/delete/<int:application_id>", methods=["DELETE"])
+def delete_application(application_id):
+    user_id = logged_in_user_id()
+    if not user_id:
+        return jsonify({"error": "Please log in"}), 401
+
+    if not app_services.delete_application(application_id, user_id):
+        return jsonify({"error": "Application not found"}), 404
+    return jsonify({"message": "Application deleted successfully"})
