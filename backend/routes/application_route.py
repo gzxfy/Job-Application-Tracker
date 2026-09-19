@@ -14,6 +14,7 @@ def application_response(application):
         "id": application.id,
         "user_id": application.user_id,
         "company_id": application.company_id,
+        "company_name": application.company.name,
         "position": application.position,
         "job_url": application.job_url,
         "status": application.status,

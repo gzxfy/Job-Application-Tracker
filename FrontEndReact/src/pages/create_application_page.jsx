@@ -11,7 +11,7 @@ export default function CreateApplication() {
 
             <ApplicationForm
                 onCancel={() => navigate("/dashboard")}
-                onCreated={() => navigate("/dashboard")}
+                onCreated={(application) => navigate(`/applications/${application.id}`)}
             />
         </main>
     )

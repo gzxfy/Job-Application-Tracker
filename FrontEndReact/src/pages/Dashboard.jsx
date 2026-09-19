@@ -26,7 +26,7 @@ export default function Dashboard() {
             {error && <p>{error}</p>}
             {applications.map((application) => (
                 <div key={application.id}>
-                    <h2>{application.position}</h2>
+                    <Link to={`/applications/${application.id}`}>{application.position}</Link>
                     <p>Status: {application.status}</p>
                 </div>
             ))}
