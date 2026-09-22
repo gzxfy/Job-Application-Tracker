@@ -7,6 +7,7 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/api/register', methods=['POST'])
 def register():
+    # Registration validates credentials, creates the user, and starts a session.
     data = request.get_json() or {}
     name = data.get('name', '').strip()
     email = data.get('email', '').strip()  # Remove leading/trailing whitespace from email
@@ -25,6 +26,7 @@ def register():
 
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
+    # Login stores the authenticated user's ID for later protected requests.
     data = request.get_json() or {}
     email = data.get('email', '').strip()  # Remove leading/trailing whitespace from email
     password = data.get('password', '').strip()  # Remove leading/trailing whitespace from password
@@ -40,6 +42,7 @@ def login():
 
 @auth_bp.route('/api/me', methods=['GET'])
 def current_user():
+    # Return the current session user's public account fields.
     user_id = session.get("user_id")
 
     if not user_id:
@@ -58,6 +61,7 @@ def current_user():
 
 @auth_bp.route('/api/account', methods=['GET'])
 def account():
+    # Simple protected account endpoint used to verify session authentication.
     user_id = session.get("user_id")
 
     if not user_id:
@@ -72,5 +76,6 @@ def account():
 
 @auth_bp.route('/api/logout', methods=['POST'])
 def logout():
+    # Clearing the session invalidates the current browser login.
     session.clear()
     return jsonify({"message": "Logged out successfully"}), 200

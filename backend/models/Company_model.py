@@ -2,6 +2,7 @@ from datetime import datetime
 from backend.extensions import db
 
 class Company(db.Model):
+    # Companies are shared reference records applications point to by company_id.
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     website = db.Column(db.String(255), nullable=False)

@@ -7,6 +7,7 @@ const STATUS_DOT = {
 
 // Displays recent activity until real update records are available.
 export default function UpdatesPanel({ updates }) {
+    // Updates are currently supplied by the dashboard until an activity API exists.
     return (
         <aside className="w-full shrink-0 lg:w-72">
             <h2 className="mb-4 font-display text-xl font-semibold text-cream-ink">Updates</h2>

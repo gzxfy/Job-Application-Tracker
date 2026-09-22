@@ -6,6 +6,7 @@ export default function AuthButton({
   type = "submit",
   disabled = false,
 }) {
+  // A pending request always wins over the caller's disabled prop.
   const isDisabled = disabled || loading;
 
   return (

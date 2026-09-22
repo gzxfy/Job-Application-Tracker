@@ -3,6 +3,7 @@ from backend.extensions import db
 from datetime import datetime
 
 def get_application_by_id(application_id, user_id=None):
+    # Add the user filter when called from a protected route to enforce ownership.
     query = Application.query.filter_by(id=application_id)
     if user_id is not None:
         query = query.filter_by(user_id=user_id)
@@ -12,6 +13,7 @@ def get_all_applications(user_id):
     return Application.query.filter_by(user_id=user_id).all()
 
 def create_application(user_id, company_id, position, job_url=None, status="Applied", date_applied=None):
+    # Convert the API's YYYY-MM-DD string into the database datetime type.
     if date_applied:
         date_applied = datetime.strptime(date_applied, "%Y-%m-%d")
 
@@ -24,11 +26,13 @@ def create_application(user_id, company_id, position, job_url=None, status="Appl
         date_applied=date_applied
     )
 
+    # Persist once all fields have been assembled so callers receive a saved row.
     db.session.add(application)
     db.session.commit()
     return application
 
 def update_application(application_id, user_id, company_id=None, position=None, job_url=None, status=None):
+    # Only supplied fields are changed, allowing partial PUT payloads.
     application = get_application_by_id(application_id, user_id)
     if not application:
         return None
@@ -45,6 +49,7 @@ def update_application(application_id, user_id, company_id=None, position=None, 
     return application
 
 def delete_application(application_id, user_id):
+    # Look up through the owner-aware helper before deleting anything.
     application = get_application_by_id(application_id, user_id)
     if not application:
         return False

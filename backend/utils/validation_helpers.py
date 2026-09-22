@@ -3,6 +3,7 @@ from zxcvbn import zxcvbn
 import re
 
 def validate_email(email):
+    # Keep basic email validation close to the authentication service.
     email = email.strip()  # Remove leading and trailing whitespace
     email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     if not re.match(email_regex, email):
@@ -11,6 +12,7 @@ def validate_email(email):
     return True
 
 def validate_password(password):
+    # Combine length, zxcvbn strength, and character requirements.
     password = password.strip()  # Remove leading and trailing whitespace
 
     if len(password) < 8:

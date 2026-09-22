@@ -3,6 +3,7 @@ import FormField from "./FormField";
 
 // Collects a new application and sends it to the API.
 export default function ApplicationForm({ onCancel, onCreated }) {
+	// Keep form values local until the user submits the complete application.
 	const [formData, setFormData] = useState({
 		company_id: "1",
 		position: "",
@@ -15,19 +16,20 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	// Keeps each input in sync with the form state.
+	// Keeps every controlled input in sync with the form state by its name.
 	function handleChange(event) {
 		const { name, value } = event.target;
 		setFormData((currentData) => ({ ...currentData, [name]: value }));
 	}
 
-	// Saves the application before telling the parent page to navigate or refresh.
+	// Saves the application, reports API errors, then lets the parent refresh or navigate.
 	async function handleSubmit(event) {
 		event.preventDefault();
 		setLoading(true);
 		setMessage("");
 
 		try {
+			// Vite proxies this relative API request to the Flask server in development.
 			const response = await fetch("/api/applications/create", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },

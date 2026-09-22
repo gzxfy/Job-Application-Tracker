@@ -7,6 +7,7 @@ application_notes_bp = Blueprint("application_notes", __name__)
 
 
 def note_response(note):
+    # Convert the SQLAlchemy model into the JSON shape used by the React client.
     return {
         "id": note.id,
         "application_id": note.application_id,
@@ -18,6 +19,7 @@ def note_response(note):
 
 @application_notes_bp.route("/api/applications/<int:application_id>/notes", methods=["POST"])
 def create_note(application_id):
+    # Create one independent note under the application in the URL.
     user_id = session.get("user_id")
 
     if not user_id:
@@ -39,6 +41,7 @@ def create_note(application_id):
 
 @application_notes_bp.route("/api/applications/<int:application_id>/notes",methods=["GET"])
 def get_notes(application_id):
+    # The service verifies application ownership before returning its notes.
     user_id = session.get("user_id")
 
     if not user_id:
@@ -57,6 +60,7 @@ def get_notes(application_id):
 
 @application_notes_bp.route("/api/applications/<int:application_id>/notes/<int:application_note_id>", methods=["PUT"])
 def update_note(application_id, application_note_id):
+    # The URL identifies both the parent application and the note being edited.
     user_id = session.get("user_id")
 
     if not user_id:
@@ -82,6 +86,7 @@ def update_note(application_id, application_note_id):
 
 @application_notes_bp.route("/api/applications/<int:application_id>/notes/<int:application_note_id>", methods=["DELETE"])
 def delete_note(application_id, application_note_id):
+    # Delete only the selected note, never all notes for the application.
     user_id = session.get("user_id")
 
     if not user_id:

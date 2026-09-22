@@ -10,6 +10,7 @@ export default function InputField({
   required = false,
   autoComplete,
 }) {
+  // The parent owns the value and validation state for this reusable input.
   return (
     <div className="mb-5 text-left">
       <label

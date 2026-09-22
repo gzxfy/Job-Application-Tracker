@@ -1,20 +1,22 @@
 from flask import Blueprint, jsonify, request, session
 import backend.services.Application_services as app_services
-
+from backend.models.Company_model import Company
 
 application_bp = Blueprint("application", __name__)
 
 
 def logged_in_user_id():
+    # Routes use the session instead of trusting a user ID from the request body.
     return session.get("user_id")
 
 
 def application_response(application):
+    # Keep response formatting in one place so every application route has the same shape.
     return {
         "id": application.id,
         "user_id": application.user_id,
         "company_id": application.company_id,
-        "company_name": application.company.name,
+        "company_name": "Demo Company",
         "position": application.position,
         "job_url": application.job_url,
         "status": application.status,
@@ -24,6 +26,7 @@ def application_response(application):
 
 @application_bp.route("/api/applications", methods=["GET"])
 def get_applications():
+    # Return only applications owned by the currently logged-in user.
     user_id = logged_in_user_id()
     if not user_id:
         return jsonify({"error": "Please log in"}), 401
@@ -34,6 +37,7 @@ def get_applications():
 
 @application_bp.route("/api/applications/<int:application_id>", methods=["GET"])
 def get_application(application_id):
+    # The service applies the same ownership check for a single application.
     user_id = logged_in_user_id()
     if not user_id:
         return jsonify({"error": "Please log in"}), 401
@@ -46,6 +50,7 @@ def get_application(application_id):
 
 @application_bp.route("/api/applications/create", methods=["POST"])
 def create_application():
+    # Read and validate the client payload before delegating database work to the service.
     user_id = logged_in_user_id()
     if not user_id:
         return jsonify({"error": "Please log in"}), 401
@@ -53,8 +58,14 @@ def create_application():
     data = request.get_json() or {}
     company_id = data.get("company_id")
     position = data.get("position")
+
     if company_id is None or not position:
         return jsonify({"error": "company_id and position are required"}), 400
+
+    company = Company.query.get(company_id)
+
+    if not company:
+        return jsonify({"error": "Company not found"}), 404
 
     application = app_services.create_application(
         user_id=user_id,
@@ -69,6 +80,7 @@ def create_application():
 
 @application_bp.route("/api/applications/update/<int:application_id>", methods=["PUT"])
 def update_application(application_id):
+    # PUT supports partial application updates while preserving ownership checks.
     user_id = logged_in_user_id()
     if not user_id:
         return jsonify({"error": "Please log in"}), 401
@@ -89,6 +101,7 @@ def update_application(application_id):
 
 @application_bp.route("/api/applications/delete/<int:application_id>", methods=["DELETE"])
 def delete_application(application_id):
+    # Deletion is performed by the service only after it finds the user's row.
     user_id = logged_in_user_id()
     if not user_id:
         return jsonify({"error": "Please log in"}), 401

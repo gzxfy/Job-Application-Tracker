@@ -9,7 +9,7 @@ export default function ViewDetailedApplication() {
     const [application, setApplication] = useState(null);
     const [error, setError] = useState("");
 
-    // Fetches the application identified by the URL parameter.
+    // Fetch the application identified by the URL parameter whenever it changes.
     useEffect(() => {
         async function loadApplication() {
             try {
@@ -27,40 +27,42 @@ export default function ViewDetailedApplication() {
         }
         loadApplication();
     }, [applicationId]);
-
-    // Deletes the current application and returns to the dashboard.
+   
+    // Delete the current application and return to the dashboard after success.
     async function handleDelete() {
-    const response = await fetch(
-      `/api/applications/delete/${applicationId}`,
-      { method: "DELETE" }
-    );
-
-    if (response.ok) {
-        navigate("/dashboard");
-    } else {
-        setError("Could not delete application");
+        const response = await fetch(
+            `/api/applications/delete/${applicationId}`,
+            { method: "DELETE" }
+        );
+        
+        if (response.ok) {
+            navigate("/dashboard");
+        } else {
+            setError("Could not delete application");
         }
     }
-
+    
     if (error) {
         return (
-        <main>
+            <main>
             <p>{error}</p>
             <Link to="/dashboard">Back to Dashboard</Link>
         </main>
         );
     }
-
+    
     if (!application) {
         return <p>Loading application...</p>;
     }
-
+    
     const appliedDate = application.date_applied
     ? new Date(application.date_applied).toLocaleDateString()
     : "Not provided";
+    
+   
 
     return (
-    <main>
+        <main>
         <Link to="/dashboard">Back to Dashboard</Link>
 
         <h1>{application.position}</h1>

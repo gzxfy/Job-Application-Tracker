@@ -3,6 +3,7 @@ import ApplicationForm from "../components/ApplicationForm";
 
 // Provides the full-page version of the reusable application form.
 export default function CreateApplication() {
+  // This page reuses the same form as the dashboard modal with different callbacks.
   const navigate = useNavigate();
 
   return (

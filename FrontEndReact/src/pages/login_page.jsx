@@ -6,6 +6,7 @@ import AuthButton from "../components/AuthButton";
 
 // Handles login and sends authenticated users to the dashboard.
 export default function Login() {
+  // The page owns credential state and redirects only after Flask confirms login.
   const navigate = useNavigate();
   const location = useLocation();
   const [loginData, setLoginData] = useState({
@@ -20,7 +21,7 @@ export default function Login() {
     location.state?.successMessage || ""
   );
 
-  // Sends credentials to Flask and handles success or validation errors.
+  // Sends credentials to Flask and handles JSON validation or network errors.
   async function handleLogin(event) {
     event.preventDefault();
     const payload = {
@@ -38,7 +39,7 @@ export default function Login() {
         body: JSON.stringify(payload),
       });
 
-      {/* This is here for debugging for the back */}
+      // Read text first so a non-JSON server error can be reported safely.
       const text = await response.text();
       let result = {};
 

@@ -1,5 +1,6 @@
 // Shows the summary numbers calculated by the dashboard page.
 export default function DashboardStats({ stats }) {
+    // Stats are derived by Dashboard so this component remains presentation-only.
     return (
         <section className="mb-6 grid grid-cols-2 gap-6 border-b border-dash-rule pb-6 md:grid-cols-4">
             {stats.map((stat) => (
