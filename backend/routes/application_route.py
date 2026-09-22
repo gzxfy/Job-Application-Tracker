@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, session
-import backend.services.application_services as app_services
+import backend.services.Application_services as app_services
 
 
 application_bp = Blueprint("application", __name__)
