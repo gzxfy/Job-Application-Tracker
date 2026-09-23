@@ -1,93 +1,124 @@
 import { useEffect, useState } from "react";
+import NoteModal from "./NoteModal";
 
-export default function NotesEditor({applicationId}) {
-    const [notes, setNotes] = useState([]);
-    const [content, setContent] = useState("")
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState("")
-    
-    
-    useEffect(() => {
-        async function loadNotes() {
-            try {
-                const response = await fetch(
-                    `/api/applications/${applicationId}/notes`
-                );
-                const data = await response.json();
+function formatNoteDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
-                if (!response.ok) {
-                    throw new Error (data.error || "Could not load notes")
-                }
+export default function NotesEditor({ applicationId }) {
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-                setNotes(data)
-            } catch (error) {
-                setError(error.message)
-            } finally {
-                setLoading(false)
-            }
+  useEffect(() => {
+    async function loadNotes() {
+      try {
+        const response = await fetch(`/api/applications/${applicationId}/notes`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Could not load notes");
         }
-        loadNotes();
-    }, [applicationId])
 
-    async function handleCreateNote(event) {
-        event.preventDefault();
-
-        try {
-            const response = await fetch(
-                `/api/applications/${applicationId}/notes`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({content})
-                }
-            );
-            
-            const newNote = await response.json();
-
-            if (!response.ok) {
-                throw new Error(newNote.error || "Could not create note")
-            }
-
-            setNotes((currentNotes) => [
-                ...currentNotes,
-                newNote,
-            ]);
-            setContent("");
-        } catch (error) {
-            setError(error.message)
-        }
+        setNotes(data);
+      } catch (loadError) {
+        setError(loadError.message);
+      } finally {
+        setLoading(false);
+      }
     }
+    loadNotes();
+  }, [applicationId]);
 
-    if (loading) {
-        return <p>Loading notes...</p>
+  async function handleCreateNote(content) {
+    setSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch(`/api/applications/${applicationId}/notes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      const newNote = await response.json();
+
+      if (!response.ok) {
+        throw new Error(newNote.error || "Could not create note");
+      }
+
+      setNotes((currentNotes) => [newNote, ...currentNotes]);
+      setShowModal(false);
+    } catch (createError) {
+      setError(createError.message);
+    } finally {
+      setSaving(false);
     }
+  }
 
-    return (
-        <section>
-            <h2>Notes</h2>
+  const orderedNotes = [...notes].sort(
+    (left, right) => new Date(right.created_at) - new Date(left.created_at)
+  );
 
-            {error && <p>{error}</p>}
+  if (loading) {
+    return <p className="font-sans text-sm text-dash-muted">Loading notes...</p>;
+  }
 
-            <form onSubmit={handleCreateNote}>
-                <textarea value={content} onChange={(event) => setContent(event.target.value)}
-                                          placeholder="Write a note..." required />
-                <button type="submit">Add note</button>
+  return (
+    <div>
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => {
+            setError("");
+            setShowModal(true);
+          }}
+          className="font-sans text-sm font-medium text-gold"
+        >
+          + Add Note
+        </button>
+      </div>
 
-            </form>
+      {!showModal && error && (
+        <p className="mb-3 font-sans text-sm text-error" role="alert">
+          {error}
+        </p>
+      )}
 
-            {notes.length === 0 ? (
-                <p>No notes yet.</p>
-            ) : (
-                <ul>
-                    {notes.map((note) => (
-                        <li key={note.id}>
-                            {note.content}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </section>
-    )
+      {orderedNotes.length === 0 ? (
+        <p className="font-sans text-sm text-dash-muted">No notes added.</p>
+      ) : (
+        <ul>
+          {orderedNotes.map((note) => (
+            <li key={note.id} className="border-b border-dash-rule py-3">
+              <p className="font-sans text-xs text-dash-muted">
+                {formatNoteDate(note.created_at)}
+              </p>
+              <p className="mt-1 font-sans text-sm text-cream-ink">{note.content}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {showModal && (
+        <NoteModal
+          onClose={() => setShowModal(false)}
+          onSave={handleCreateNote}
+          saving={saving}
+          error={error}
+        />
+      )}
+    </div>
+  );
 }
