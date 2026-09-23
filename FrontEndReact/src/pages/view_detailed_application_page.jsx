@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import ApplicationDetailsModal from "../components/ApplicationDetailNotes";
+
 
 // Loads and displays one application selected from the dashboard.
 export default function ViewDetailedApplication() {
@@ -8,6 +10,8 @@ export default function ViewDetailedApplication() {
 
     const [application, setApplication] = useState(null);
     const [error, setError] = useState("");
+
+    const [showModal, setShowModal] = useState(false)
 
     // Fetch the application identified by the URL parameter whenever it changes.
     useEffect(() => {
@@ -105,6 +109,14 @@ export default function ViewDetailedApplication() {
         <button type="button" onClick={handleDelete}>
             Delete Application
         </button>
+
+        <button type="button" onClick={() => setShowModal(true)}>
+            Add More Details
+        </button>
+        
+        {showModal && (
+            <ApplicationDetailsModal applicationId={applicationId} onClose={() => setShowModal(false)} />
+        )};
     </main>
     );
 }
