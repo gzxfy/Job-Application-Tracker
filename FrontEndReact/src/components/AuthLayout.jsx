@@ -1,5 +1,6 @@
 // Provides the shared two-column layout for authentication pages.
 export default function AuthLayout({ title, children }) {
+  // Auth pages share the same visual shell while supplying different forms.
   return (
     <div className="flex min-h-svh w-full flex-col md:flex-row">
       <section className="flex w-full flex-1 flex-col justify-center bg-bg px-8 py-12 md:w-[55%] md:px-14 lg:px-20">

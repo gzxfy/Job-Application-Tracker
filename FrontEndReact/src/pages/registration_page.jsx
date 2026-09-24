@@ -6,6 +6,7 @@ import AuthButton from "../components/AuthButton";
 
 // Handles account creation before sending the user to the dashboard.
 export default function Registration() {
+  // Registration owns all fields so client-side confirmation errors can be shown immediately.
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -31,7 +32,7 @@ export default function Registration() {
     setErrorMessage("");
   }
 
-  // Validates the form and creates the account through Flask.
+  // Validate the matching passwords, then create the account through Flask.
   async function handleRegistration(event) {
     event.preventDefault();
 
@@ -57,7 +58,7 @@ export default function Registration() {
         body: JSON.stringify(payload),
       });
 
-      {/* This is here for debugging for the backEnd */}
+      // Read text first so HTML or empty server errors do not break JSON parsing.
       const text = await response.text();
       let result = {};
 

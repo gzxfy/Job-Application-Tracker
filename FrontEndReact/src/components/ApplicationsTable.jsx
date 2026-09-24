@@ -9,6 +9,7 @@ const STATUS_PILL = {
     Withdrawn: "bg-[#F0EEEA] text-[#6B6560]",
 };
 
+// Translate ISO timestamps from Flask into a readable dashboard date.
 // Formats API date values for the dashboard table.
 function formatDate(value) {
     if (!value) return "—";
@@ -21,7 +22,7 @@ function formatDate(value) {
     });
 }
 
-// Displays filtered applications and links each role to its detail page.
+// Displays the already-filtered applications and links each role to its detail page.
 export default function ApplicationsTable({ applications, searchQuery, onSearchChange }) {
     return (
         <section className="min-w-0 flex-1">

@@ -32,6 +32,7 @@ function countByStatus(applications, status) {
 
 // Loads the current user's applications from the Flask API.
 async function fetchApplications() {
+    // Keep API access in one helper so loading and refresh use the same contract.
     const response = await fetch("/api/applications");
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Could not load applications");
@@ -48,7 +49,7 @@ export default function Dashboard() {
     const [activeTab, setActiveTab] = useState("Applications");
     const [showCreateModal, setShowCreateModal] = useState(false);
 
-    // Refreshes the list after an application is created in the modal.
+    // Refresh the list after a child form confirms a successful create request.
     async function loadApplications() {
         try {
             const data = await fetchApplications();
@@ -59,14 +60,14 @@ export default function Dashboard() {
         }
     }
 
-    // Loads applications once when the dashboard first opens.
+    // Load applications once when the dashboard first opens.
     useEffect(() => {
         fetchApplications()
             .then(setApplications)
             .catch((loadError) => setError(loadError.message));
     }, []);
 
-    // Derives summary counts from the applications already in state.
+    // Derive summary counts from the applications already in state.
     const stats = useMemo(() => {
         const total = applications.length;
         const offers = countByStatus(applications, "Offer");
@@ -80,7 +81,7 @@ export default function Dashboard() {
         ];
     }, [applications]);
 
-    // Builds the numbers shown beside each status filter.
+    // Build the numbers shown beside each status filter.
     const filterCounts = useMemo(() => {
         return Object.fromEntries(
             STATUS_FILTERS.map((status) => [
@@ -90,7 +91,7 @@ export default function Dashboard() {
         );
     }, [applications]);
 
-    // Applies both the selected status and search text to the table data.
+    // Apply both the selected status and search text to the table data.
     const filteredApplications = useMemo(() => {
         const query = searchQuery.trim().toLowerCase();
         return applications.filter((application) => {

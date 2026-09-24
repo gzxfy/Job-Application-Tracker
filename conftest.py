@@ -36,6 +36,11 @@ def client(app):
 
 
 @pytest.fixture
+def app_context(app):
+    return app
+
+
+@pytest.fixture
 def logged_in_client(client):
     register_response = client.post("/api/register", json={
         "name": "Test User",

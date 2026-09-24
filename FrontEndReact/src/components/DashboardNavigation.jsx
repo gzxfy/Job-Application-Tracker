@@ -8,6 +8,7 @@ export default function DashboardNavigation({
     activeTab,
     onTabChange,
 }) {
+    // The parent owns selected values; this component only renders controls and emits changes.
     return (
         <>
             <section className="mb-5 flex flex-wrap gap-2">
