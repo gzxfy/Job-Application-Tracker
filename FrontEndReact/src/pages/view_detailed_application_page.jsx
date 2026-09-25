@@ -426,9 +426,25 @@ export default function ViewDetailedApplication() {
         <EditApplicationModal
           status={application.status}
           onClose={() => setShowEdit(false)}
-          onSave={(status) => {
-            setApplication((current) => ({ ...current, status }));
-            setShowEdit(false);
+          onSave={async (status) => {
+            try {
+              const response = await fetch(`/api/applications/update/${applicationId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status }),
+              });
+              const data = await response.json();
+
+              if (!response.ok) {
+                throw new Error(data.error || "Could not update application status");
+              }
+
+              setApplication(data);
+              setError("");
+              setShowEdit(false);
+            } catch (saveError) {
+              setError(saveError.message || "Could not update application status");
+            }
           }}
         />
       )}
