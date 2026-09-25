@@ -14,13 +14,15 @@ def get_company_by_id(company_id, user_id=None):
     return query.first()
 
 
-def get_all_companies(user_id=None):
-    """List the user's companies plus any global demo companies."""
+def get_all_companies(user_id=None, search=None):
+    """List accessible companies, optionally filtered by a name search."""
     query = Company.query
     if user_id is not None:
         query = query.filter(
             db.or_(Company.user_id == user_id, Company.user_id.is_(None))
         )
+    if search and search.strip():
+        query = query.filter(Company.name.ilike(f"%{search.strip()}%"))
     return query.order_by(Company.name).all()
 
 

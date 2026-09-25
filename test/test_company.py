@@ -50,6 +50,17 @@ def test_get_companies_returns_created_company(logged_in_client):
     assert returned_company["headquarters"] == "New York"
 
 
+def test_search_companies_returns_matching_names_only(logged_in_client):
+    create_company(logged_in_client, name="Acme Labs")
+    create_company(logged_in_client, name="Northwind Systems")
+
+    response = logged_in_client.get("/api/companies?search=acme")
+
+    assert response.status_code == 200
+    companies = response.get_json()
+    assert [company["name"] for company in companies] == ["Acme Labs"]
+
+
 def test_get_company_returns_requested_company(logged_in_client):
     created_response = create_company(logged_in_client)
     company_id = created_response.get_json()["id"]

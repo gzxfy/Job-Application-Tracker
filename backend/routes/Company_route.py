@@ -27,7 +27,8 @@ def get_companies():
     if not user_id:
         return jsonify({"error": "Please log in"}), 401
 
-    companies = company_services.get_all_companies(user_id)
+    search = request.args.get("search")
+    companies = company_services.get_all_companies(user_id, search)
     return jsonify([company_response(company) for company in companies]), 200
 
 
