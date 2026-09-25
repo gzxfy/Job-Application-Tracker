@@ -18,6 +18,9 @@ def create_application(
     position,
     job_url=None,
     job_description=None,
+    salary=None,
+    location=None,
+    work_type=None,
     status="Applied",
     date_applied=None,
 ):
@@ -32,6 +35,9 @@ def create_application(
         status=status,
         job_url=job_url,
         job_description=job_description,
+        salary=salary,
+        location=location,
+        work_type=work_type,
         date_applied=date_applied
     )
 
@@ -47,6 +53,9 @@ def update_application(
     position=None,
     job_url=None,
     job_description=None,
+    salary=None,
+    location=None,
+    work_type=None,
     status=None,
 ):
     # Only supplied fields are changed, allowing partial PUT payloads.
@@ -61,6 +70,12 @@ def update_application(
         application.job_url = job_url
     if job_description is not None:
         application.job_description = job_description
+    if salary is not None:
+        application.salary = salary
+    if location is not None:
+        application.location = location
+    if work_type is not None:
+        application.work_type = work_type
     if status is not None:
         application.status = status
 

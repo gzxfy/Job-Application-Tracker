@@ -6,6 +6,9 @@ def test_create_application(logged_in_client):
         "company_id": 1,
         "position": "Test Position",
         "job_url": "https://example.com/job",
+        "salary": 95000,
+        "location": "Remote",
+        "work_type": "Full-time",
         "status": "Applied",
     })
 
@@ -17,17 +20,26 @@ def test_create_application(logged_in_client):
     assert data["company_id"] == 1
     assert data["position"] == "Test Position"
     assert data["job_url"] == "https://example.com/job"
+    assert data["salary"] == 95000
+    assert data["location"] == "Remote"
+    assert data["work_type"] == "Full-time"
     assert data["status"] == "Applied"
     assert application is not None
     assert application.user_id == 1
     assert application.company_id == 1
     assert application.position == "Test Position"
+    assert application.salary == 95000
+    assert application.location == "Remote"
+    assert application.work_type == "Full-time"
 
 
 def test_get_application_by_id(logged_in_client):
     create_response = logged_in_client.post("/api/applications/create", json={
         "company_id": 1,
         "position": "Test Position",
+        "salary": 105000,
+        "location": "New York",
+        "work_type": "Hybrid",
         "status": "Applied",
     })
     application_id = create_response.get_json()["id"]
@@ -40,6 +52,9 @@ def test_get_application_by_id(logged_in_client):
     assert data["company_id"] == 1
     assert data["position"] == "Test Position"
     assert data["status"] == "Applied"
+    assert data["salary"] == 105000
+    assert data["location"] == "New York"
+    assert data["work_type"] == "Hybrid"
 
 
 def test_get_applications_returns_logged_in_users_applications(logged_in_client):
@@ -71,6 +86,9 @@ def test_update_application_updates_database(logged_in_client):
             "position": "Updated Position",
             "status": "Interview",
             "job_url": "https://example.com/updated-job",
+            "salary": 110000,
+            "location": "Austin, TX",
+            "work_type": "On-site",
         },
     )
 
@@ -79,9 +97,15 @@ def test_update_application_updates_database(logged_in_client):
     application = Application.query.get(application_id)
     assert data["position"] == "Updated Position"
     assert data["status"] == "Interview"
+    assert data["salary"] == 110000
+    assert data["location"] == "Austin, TX"
+    assert data["work_type"] == "On-site"
     assert application.position == "Updated Position"
     assert application.status == "Interview"
     assert application.job_url == "https://example.com/updated-job"
+    assert application.salary == 110000
+    assert application.location == "Austin, TX"
+    assert application.work_type == "On-site"
 
 
 def test_update_application_saves_job_description(logged_in_client):

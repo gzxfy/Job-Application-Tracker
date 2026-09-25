@@ -48,6 +48,19 @@ def create_app(test_config=None):
                 text("ALTER TABLE application ADD COLUMN job_description TEXT")
             )
             db.session.commit()
+        if "salary" not in application_columns:
+            db.session.execute(
+                text("ALTER TABLE application ADD COLUMN salary INTEGER")
+            )
+        if "location" not in application_columns:
+            db.session.execute(
+                text("ALTER TABLE application ADD COLUMN location VARCHAR(150)")
+            )
+        if "work_type" not in application_columns:
+            db.session.execute(
+                text("ALTER TABLE application ADD COLUMN work_type VARCHAR(50)")
+            )
+        db.session.commit()
 
     return app
 

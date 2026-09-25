@@ -23,6 +23,9 @@ def application_response(application):
         "position": application.position,
         "job_url": application.job_url,
         "job_description": application.job_description,
+        "salary": application.salary,
+        "location": application.location,
+        "work_type": application.work_type,
         "status": application.status,
         "date_applied": application.date_applied,
     }
@@ -85,6 +88,9 @@ def create_application():
         position=position,
         job_url=data.get("job_url"),
         job_description=data.get("job_description"),
+        salary=data.get("salary"),
+        location=data.get("location"),
+        work_type=data.get("work_type"),
         status=data.get("status", "Applied"),
         date_applied=data.get("date_applied"),
     )
@@ -106,6 +112,9 @@ def update_application(application_id):
         position=data.get("position"),
         job_url=data.get("job_url"),
         job_description=data.get("job_description"),
+        salary=data.get("salary"),
+        location=data.get("location"),
+        work_type=data.get("work_type"),
         status=data.get("status"),
     )
     if not application:
