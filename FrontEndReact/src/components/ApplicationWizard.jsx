@@ -25,6 +25,9 @@ const initialDraft = {
   position: "",
   job_url: "",
   date_applied: "",
+  location: "",
+  work_type: "",
+  salary: "",
   resumeFileName: "",
   status: "Applied",
   interviewDate: "",
@@ -150,6 +153,9 @@ export default function ApplicationWizard({ onCancel, onSaved, onCreated }) {
             job_url: draft.job_url.trim() || null,
             status: draft.status,
             date_applied: draft.date_applied || null,
+            location: draft.location.trim() || null,
+            work_type: draft.work_type || null,
+            salary: draft.salary.trim() ? Math.trunc(Number(draft.salary)) : null,
           }),
         });
         const application = await applicationResponse.json();
@@ -320,6 +326,35 @@ export default function ApplicationWizard({ onCancel, onSaved, onCreated }) {
               type="date"
               value={draft.date_applied}
               onChange={(event) => updateDraft({ date_applied: event.target.value })}
+            />
+          </FormField>
+          <FormField label="Location" id="wizard-location">
+            <input
+              id="wizard-location"
+              value={draft.location}
+              onChange={(event) => updateDraft({ location: event.target.value })}
+            />
+          </FormField>
+          <FormField label="Work type" id="wizard-work-type">
+            <select
+              id="wizard-work-type"
+              value={draft.work_type}
+              onChange={(event) => updateDraft({ work_type: event.target.value })}
+            >
+              <option value="">Select</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="On-site">On-site</option>
+            </select>
+          </FormField>
+          <FormField label="Salary" id="wizard-salary">
+            <input
+              id="wizard-salary"
+              type="number"
+              min="0"
+              step="1"
+              value={draft.salary}
+              onChange={(event) => updateDraft({ salary: event.target.value })}
             />
           </FormField>
         </div>

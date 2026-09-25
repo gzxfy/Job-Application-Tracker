@@ -10,6 +10,7 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 		status: "Applied",
 		location: "",
 		work_type: "Hybrid",
+		salary: "",
 		job_url: "",
 		date_applied: "",
 	});
@@ -39,6 +40,9 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 					status: formData.status,
 					job_url: formData.job_url,
 					date_applied: formData.date_applied,
+					location: formData.location.trim() || null,
+					work_type: formData.work_type || null,
+					salary: formData.salary.trim() ? Math.trunc(Number(formData.salary)) : null,
 				}),
 			});
 			const result = await response.json();
@@ -81,10 +85,14 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 
 			<FormField label="Work Type" id="work_type">
 				<select id="work_type" name="work_type" value={formData.work_type} onChange={handleChange}>
-					<option value="In-person">In-person</option>
-					<option value="Hybrid">Hybrid</option>
 					<option value="Remote">Remote</option>
+					<option value="Hybrid">Hybrid</option>
+					<option value="On-site">On-site</option>
 				</select>
+			</FormField>
+
+			<FormField label="Salary" id="salary">
+				<input id="salary" name="salary" type="number" min="0" step="1" value={formData.salary} onChange={handleChange} />
 			</FormField>
 
 			<FormField label="Job URL" id="job_url">

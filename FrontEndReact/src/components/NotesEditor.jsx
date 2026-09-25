@@ -18,6 +18,8 @@ export default function NotesEditor({ applicationId }) {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [confirmingId, setConfirmingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     async function loadNotes() {
@@ -67,6 +69,30 @@ export default function NotesEditor({ applicationId }) {
     }
   }
 
+  async function handleDeleteNote(noteId) {
+    setDeletingId(noteId);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `/api/applications/${applicationId}/notes/${noteId}`,
+        { method: "DELETE" }
+      );
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "Could not delete note");
+      }
+
+      setNotes((currentNotes) => currentNotes.filter((note) => note.id !== noteId));
+      setConfirmingId(null);
+    } catch (deleteError) {
+      setError(deleteError.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   const orderedNotes = [...notes].sort(
     (left, right) => new Date(right.created_at) - new Date(left.created_at)
   );
@@ -101,11 +127,41 @@ export default function NotesEditor({ applicationId }) {
       ) : (
         <ul>
           {orderedNotes.map((note) => (
-            <li key={note.id} className="border-b border-dash-rule py-3">
-              <p className="font-sans text-xs text-dash-muted">
-                {formatNoteDate(note.created_at)}
-              </p>
-              <p className="mt-1 font-sans text-sm text-cream-ink">{note.content}</p>
+            <li key={note.id} className="flex items-start justify-between gap-4 border-b border-dash-rule py-3">
+              <div>
+                <p className="font-sans text-xs text-dash-muted">
+                  {formatNoteDate(note.created_at)}
+                </p>
+                <p className="mt-1 font-sans text-sm text-cream-ink">{note.content}</p>
+              </div>
+              {confirmingId === note.id ? (
+                <div className="flex shrink-0 items-center gap-3">
+                  <span className="font-sans text-sm text-cream-ink">Delete this note?</span>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteNote(note.id)}
+                    disabled={deletingId === note.id}
+                    className="font-sans text-sm font-medium text-error"
+                  >
+                    {deletingId === note.id ? "Deleting…" : "Delete"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(null)}
+                    className="font-sans text-sm text-dash-muted"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmingId(note.id)}
+                  className="shrink-0 font-sans text-sm font-medium text-error"
+                >
+                  Delete
+                </button>
+              )}
             </li>
           ))}
         </ul>

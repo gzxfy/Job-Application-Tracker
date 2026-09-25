@@ -4,6 +4,7 @@ import EditApplicationModal from "../components/EditApplicationModal";
 import InterviewModal from "../components/InterviewModal";
 import JobDescriptionModal from "../components/JobDescriptionModal";
 import NotesEditor from "../components/NotesEditor";
+import OverviewModal from "../components/OverviewModal";
 import ResumeModal from "../components/ResumeModal";
 
 const STATUS_PILL = {
@@ -16,7 +17,24 @@ const STATUS_PILL = {
   Saved: "bg-[#F3EFE4] text-[#8A6A2F]",
 };
 
+const WORK_TYPE_PILL = {
+  Remote: "bg-[#E8EEF6] text-[#3D5A80]",
+  Hybrid: "bg-[#F3EFE4] text-[#8A6A2F]",
+  "On-site": "bg-[#E8F0EA] text-[#3D6B4F]",
+};
+
 const PROGRESS_STAGES = ["Saved", "Applied", "Phone Screen", "Interview", "Offer"];
+
+function formatSalary(value) {
+  if (value === null || value === undefined || value === "") return "—";
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return "—";
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
 const MOCK_INTERVIEWS = [
   {
@@ -112,9 +130,11 @@ export default function ViewDetailedApplication() {
   const [resumeFilename, setResumeFilename] = useState("");
   const [interviews, setInterviews] = useState(MOCK_INTERVIEWS);
   const [showEdit, setShowEdit] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
   const [showResume, setShowResume] = useState(false);
   const [interviewModal, setInterviewModal] = useState(null);
+  const [confirmingInterviewId, setConfirmingInterviewId] = useState(null);
 
   // Fetch the application identified by the URL parameter whenever it changes.
   useEffect(() => {
@@ -159,6 +179,11 @@ export default function ViewDetailedApplication() {
       setInterviews((current) => [...current, { ...record, id: nextId }]);
     }
     setInterviewModal(null);
+  }
+
+  function handleDeleteInterview(interviewId) {
+    setInterviews((current) => current.filter((item) => item.id !== interviewId));
+    setConfirmingInterviewId(null);
   }
 
   if (error && !application) {
@@ -249,11 +274,34 @@ export default function ViewDetailedApplication() {
           </p>
         )}
 
-        <Section title="Overview">
+        <Section
+          title="Overview"
+          action={
+            <button
+              type="button"
+              onClick={() => setShowOverview(true)}
+              className="font-sans text-sm font-medium text-gold"
+            >
+              Edit
+            </button>
+          }
+        >
           <dl className="grid gap-x-10 sm:grid-cols-2">
-            <OverviewRow label="Location">—</OverviewRow>
-            <OverviewRow label="Work Type">—</OverviewRow>
-            <OverviewRow label="Salary">—</OverviewRow>
+            <OverviewRow label="Location">{application.location || "—"}</OverviewRow>
+            <OverviewRow label="Work Type">
+              {application.work_type ? (
+                <span
+                  className={`inline-block whitespace-nowrap rounded-[5px] px-2 py-0.5 text-xs font-medium ${
+                    WORK_TYPE_PILL[application.work_type] || "bg-[#F0EEEA] text-[#6B6560]"
+                  }`}
+                >
+                  {application.work_type}
+                </span>
+              ) : (
+                "—"
+              )}
+            </OverviewRow>
+            <OverviewRow label="Salary">{formatSalary(application.salary)}</OverviewRow>
             <OverviewRow label="Applied date">{appliedDate}</OverviewRow>
             <OverviewRow label="Job Posting">
               {application.job_url ? (
@@ -393,13 +441,44 @@ export default function ViewDetailedApplication() {
                       <p className="mt-1 font-sans text-sm text-cream-ink">{interview.notes}</p>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setInterviewModal(interview)}
-                    className="font-sans text-sm font-medium text-gold"
-                  >
-                    Edit
-                  </button>
+                  {confirmingInterviewId === interview.id ? (
+                    <div className="flex shrink-0 items-center gap-3">
+                      <span className="font-sans text-sm text-cream-ink">
+                        Delete this interview?
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteInterview(interview.id)}
+                        className="font-sans text-sm font-medium text-error"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingInterviewId(null)}
+                        className="font-sans text-sm text-dash-muted"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex shrink-0 items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setInterviewModal(interview)}
+                        className="font-sans text-sm font-medium text-gold"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingInterviewId(interview.id)}
+                        className="font-sans text-sm font-medium text-error"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -421,6 +500,28 @@ export default function ViewDetailedApplication() {
           </ul>
         </Section>
       </div>
+
+      {showOverview && (
+        <OverviewModal
+          location={application.location}
+          workType={application.work_type}
+          salary={application.salary}
+          onClose={() => setShowOverview(false)}
+          onSave={async (payload) => {
+            const response = await fetch(`/api/applications/update/${applicationId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+              throw new Error(data.error || "Could not save overview");
+            }
+            setApplication(data);
+            setShowOverview(false);
+          }}
+        />
+      )}
 
       {showEdit && (
         <EditApplicationModal
