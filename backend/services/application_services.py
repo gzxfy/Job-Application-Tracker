@@ -12,7 +12,15 @@ def get_application_by_id(application_id, user_id=None):
 def get_all_applications(user_id):
     return Application.query.filter_by(user_id=user_id).all()
 
-def create_application(user_id, company_id, position, job_url=None, status="Applied", date_applied=None):
+def create_application(
+    user_id,
+    company_id,
+    position,
+    job_url=None,
+    job_description=None,
+    status="Applied",
+    date_applied=None,
+):
     # Convert the API's YYYY-MM-DD string into the database datetime type.
     if date_applied:
         date_applied = datetime.strptime(date_applied, "%Y-%m-%d")
@@ -23,6 +31,7 @@ def create_application(user_id, company_id, position, job_url=None, status="Appl
         position=position,
         status=status,
         job_url=job_url,
+        job_description=job_description,
         date_applied=date_applied
     )
 
@@ -31,7 +40,15 @@ def create_application(user_id, company_id, position, job_url=None, status="Appl
     db.session.commit()
     return application
 
-def update_application(application_id, user_id, company_id=None, position=None, job_url=None, status=None):
+def update_application(
+    application_id,
+    user_id,
+    company_id=None,
+    position=None,
+    job_url=None,
+    job_description=None,
+    status=None,
+):
     # Only supplied fields are changed, allowing partial PUT payloads.
     application = get_application_by_id(application_id, user_id)
     if not application:
@@ -42,6 +59,8 @@ def update_application(application_id, user_id, company_id=None, position=None, 
         application.position = position
     if job_url is not None:
         application.job_url = job_url
+    if job_description is not None:
+        application.job_description = job_description
     if status is not None:
         application.status = status
 

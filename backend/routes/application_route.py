@@ -22,6 +22,7 @@ def application_response(application):
         "company_name": application.company.name,
         "position": application.position,
         "job_url": application.job_url,
+        "job_description": application.job_description,
         "status": application.status,
         "date_applied": application.date_applied,
     }
@@ -83,6 +84,7 @@ def create_application():
         company_id=company.id,
         position=position,
         job_url=data.get("job_url"),
+        job_description=data.get("job_description"),
         status=data.get("status", "Applied"),
         date_applied=data.get("date_applied"),
     )
@@ -103,6 +105,7 @@ def update_application(application_id):
         company_id=data.get("company_id"),
         position=data.get("position"),
         job_url=data.get("job_url"),
+        job_description=data.get("job_description"),
         status=data.get("status"),
     )
     if not application:

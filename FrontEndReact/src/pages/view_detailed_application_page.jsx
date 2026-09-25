@@ -128,6 +128,7 @@ export default function ViewDetailedApplication() {
         }
 
         setApplication(data);
+        setJobDescription(data.job_description || "");
       } catch (loadError) {
         setError(loadError.message);
       }
@@ -436,8 +437,20 @@ export default function ViewDetailedApplication() {
         <JobDescriptionModal
           value={jobDescription}
           onClose={() => setShowDescription(false)}
-          onSave={(value) => {
-            setJobDescription(value);
+          onSave={async (value) => {
+            const response = await fetch(`/api/applications/update/${applicationId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ job_description: value }),
+            });
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.error || "Could not save job description");
+            }
+
+            setApplication(data);
+            setJobDescription(data.job_description || "");
             setShowDescription(false);
           }}
         />

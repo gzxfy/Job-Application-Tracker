@@ -10,7 +10,11 @@ class Application(db.Model):
     
     position = db.Column(db.String(120), nullable=False)
     job_url = db.Column(db.String(255), nullable=True)
+    job_description = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(50), nullable=False)
+    # salary = db.Column(db.Integer, nullable=True)
+    # location = db.Column(db.String(150), nullable=True)
+    # work_type = db.Column(db.String(50), nullable=True)
 
     # This relationship lets response serializers access application.company.
     company = db.relationship("Company", back_populates="applications")

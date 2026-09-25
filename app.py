@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from backend.extensions import db
 from dotenv import load_dotenv
+from sqlalchemy import inspect, text
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, '.env'))
@@ -36,6 +37,17 @@ def create_app(test_config=None):
         from backend.models.Application_model import Application  # noqa: F401 registers model before create_all
         from backend.models.Interview_model import Interview  # noqa: F401 registers model before create_all
         db.create_all()
+
+        # create_all does not alter existing tables, so add newly introduced columns
+        # for local SQLite databases created before the model was expanded.
+        application_columns = {
+            column["name"] for column in inspect(db.engine).get_columns("application")
+        }
+        if "job_description" not in application_columns:
+            db.session.execute(
+                text("ALTER TABLE application ADD COLUMN job_description TEXT")
+            )
+            db.session.commit()
 
     return app
 

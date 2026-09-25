@@ -2,10 +2,21 @@ import { useState } from "react";
 
 export default function JobDescriptionModal({ value, onSave, onClose }) {
   const [draft, setDraft] = useState(value || "");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    onSave(draft);
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSave(draft);
+    } catch (saveError) {
+      setError(saveError.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -22,6 +33,7 @@ export default function JobDescriptionModal({ value, onSave, onClose }) {
         >
           Job description
         </h2>
+        {error && <p className="mb-3 font-sans text-sm text-error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <textarea
             value={draft}
@@ -42,7 +54,7 @@ export default function JobDescriptionModal({ value, onSave, onClose }) {
               type="submit"
               className="rounded-[5px] border border-forest bg-forest px-4 py-2 font-sans text-sm font-semibold text-cream"
             >
-              Save
+              {saving ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

@@ -84,6 +84,36 @@ def test_update_application_updates_database(logged_in_client):
     assert application.job_url == "https://example.com/updated-job"
 
 
+def test_update_application_saves_job_description(logged_in_client):
+    create_response = logged_in_client.post("/api/applications/create", json={
+        "company_id": 1,
+        "position": "Backend Developer",
+        "status": "Applied",
+    })
+    application_id = create_response.get_json()["id"]
+
+    update_response = logged_in_client.put(
+        f"/api/applications/update/{application_id}",
+        json={
+            "job_description": "Build APIs and maintain data services.",
+        },
+    )
+
+    assert update_response.status_code == 200
+    assert update_response.get_json()["job_description"] == (
+        "Build APIs and maintain data services."
+    )
+
+    read_response = logged_in_client.get(
+        f"/api/applications/{application_id}"
+    )
+
+    assert read_response.status_code == 200
+    assert read_response.get_json()["job_description"] == (
+        "Build APIs and maintain data services."
+    )
+
+
 def test_delete_application_removes_it_from_database(logged_in_client):
     create_response = logged_in_client.post("/api/applications/create", json={
         "company_id": 1,

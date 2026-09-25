@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ApplicationForm from "../components/ApplicationForm";
+import ApplicationWizard from "../components/ApplicationWizard";
 import ApplicationsTable from "../components/ApplicationsTable";
 import DashboardNavigation from "../components/DashboardNavigation";
 import DashboardStats from "../components/DashboardStats";
@@ -160,13 +160,23 @@ export default function Dashboard() {
             </div>
 
             {showCreateModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-cream-ink/40 p-4" role="dialog" aria-modal="true" aria-labelledby="save-job-title">
-                    <div className="max-h-[90svh] w-full max-w-md overflow-y-auto rounded-[6px] border border-dash-rule bg-cream p-6 shadow-none">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-cream-ink/40 p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="save-job-title"
+                    onClick={() => setShowCreateModal(false)}
+                >
+                    <div
+                        className="max-h-[90svh] w-full max-w-lg overflow-y-auto rounded-[6px] border border-dash-rule bg-cream p-6 shadow-none"
+                        onClick={(event) => event.stopPropagation()}
+                    >
                         <h2 id="save-job-title" className="mb-4 font-display text-2xl font-semibold text-cream-ink">
-                            Save Job
+                            New Application
                         </h2>
-                        <ApplicationForm
+                        <ApplicationWizard
                             onCancel={() => setShowCreateModal(false)}
+                            onSaved={loadApplications}
                             onCreated={() => {
                                 setShowCreateModal(false);
                                 loadApplications();
