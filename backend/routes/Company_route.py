@@ -55,7 +55,7 @@ def create_company():
     try:
         company = company_services.create_company(
             user_id=user_id,
-            name=data.get("name", ""),
+            name=data.get("company_name", ""),
             website=data.get("website", ""),
             headquarters=data.get("headquarters", ""),
         )

@@ -72,3 +72,18 @@ def delete_company(company_id, user_id):
     db.session.delete(company)
     db.session.commit()
     return True
+
+# This will be first used when creating application to store a company with only name
+
+def create_company_with_only_name(user_id, name):
+    if not name or not name.strip():
+        raise ValueError("Must enter a name")
+
+
+    company = Company(
+        user_id=user_id,
+        name=name.strip(),
+    )
+    db.session.add(company)
+    db.session.commit()
+    return company

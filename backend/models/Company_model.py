@@ -7,9 +7,9 @@ class Company(db.Model):
     # User-created companies belong to the creating user; demo records may be global.
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
 
-    name = db.Column(db.String(150), unique=True, nullable=False)
-    website = db.Column(db.String(255), nullable=False)
-    headquarters = db.Column(db.String(150), nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    website = db.Column(db.String(255), nullable=True)
+    headquarters = db.Column(db.String(150), nullable=True)
 
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

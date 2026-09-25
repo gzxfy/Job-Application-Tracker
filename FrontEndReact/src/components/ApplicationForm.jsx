@@ -5,7 +5,7 @@ import FormField from "./FormField";
 export default function ApplicationForm({ onCancel, onCreated }) {
 	// Keep form values local until the user submits the complete application.
 	const [formData, setFormData] = useState({
-		company_id: "1",
+		company_name: "",
 		position: "",
 		status: "Applied",
 		location: "",
@@ -34,7 +34,7 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					company_id: Number(formData.company_id),
+					company_name: formData.company_name,
 					position: formData.position,
 					status: formData.status,
 					job_url: formData.job_url,
@@ -59,9 +59,7 @@ export default function ApplicationForm({ onCancel, onCreated }) {
 	return (
 		<form onSubmit={handleSubmit} className="application-form">
 			<FormField label="Company" id="company_id">
-				<select id="company_id" name="company_id" value={formData.company_id} onChange={handleChange} required>
-					<option value="1">Demo Company</option>
-				</select>
+				<input type="text" id="company_name" name="company_name" value={formData.company_name} onChange={handleChange} required />
 			</FormField>
 
 			<FormField label="Position" id="position">
