@@ -20,7 +20,7 @@ def register():
         session["user_email"] = user.email
         return jsonify({'message': 'User registered successfully', 
                         'user': {'id': user.id, 'email': user.email}
-                        }), 200
+                        }), 201
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 

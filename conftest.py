@@ -49,7 +49,7 @@ def logged_in_client(client):
         "confirm_password": "TestPassword123!",
     })
 
-    assert register_response.status_code == 200
+    assert register_response.status_code == 201
 
     login_response = client.post("/api/login", json={
         "email": "testuser@example.com",

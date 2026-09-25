@@ -5,13 +5,13 @@ from werkzeug.security import check_password_hash
 
 def register_test_user(client):
     return client.post('/api/register', json={
+        "name": "Test_User",
         'email': 'testuser@example.com',
         'password': 'TestPassword123!',
         'confirm_password': 'TestPassword123!'
     })
 
 def login_test_user(client):
-    register_test_user(client)  # Ensure the user is registered before login
     return client.post('/api/login', json={
         'email': 'testuser@example.com',
         'password': 'TestPassword123!'
@@ -38,6 +38,7 @@ def test_register_user(app_context):
 def test_login_user(app_context):
     client = app_context.test_client()
     register_test_user(client)  # Ensure the user is registered before login
+
     response = login_test_user(client)
     user = User.query.filter_by(email='testuser@example.com').first()
 
