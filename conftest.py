@@ -19,7 +19,7 @@ def app():
         company = Company(
             name="Test Company",
             website="https://example.com",
-            location="Remote",
+            headquarters="Remote",
         )
         db.session.add(company)
         db.session.commit()

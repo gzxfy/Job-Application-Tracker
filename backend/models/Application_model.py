@@ -7,12 +7,13 @@ class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
+    
     position = db.Column(db.String(120), nullable=False)
     job_url = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(50), nullable=False)
 
     # This relationship lets response serializers access application.company.
-    company = db.relationship("Company", backref="applications")
+    company = db.relationship("Company", back_populates="applications")
 
     date_applied = db.Column(db.DateTime, default=datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
