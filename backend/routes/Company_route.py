@@ -55,9 +55,9 @@ def create_company():
     try:
         company = company_services.create_company(
             user_id=user_id,
-            name=data.get("company_name", ""),
-            website=data.get("website", ""),
-            headquarters=data.get("headquarters", ""),
+            name=data.get("name") or data.get("company_name", ""),
+            website=data.get("website"),
+            headquarters=data.get("headquarters"),
         )
     except ValueError as error:
         return jsonify({"error": str(error)}), 400

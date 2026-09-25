@@ -24,19 +24,15 @@ def get_all_companies(user_id=None):
     return query.order_by(Company.name).all()
 
 
-def create_company(user_id, name, website, headquarters):
+def create_company(user_id, name, website=None, headquarters=None):
     if not name or not name.strip():
         raise ValueError("Must enter a name")
-    if not headquarters or not headquarters.strip():
-        raise ValueError("Must enter a headquarters location")
-    if not website or not website.strip():
-        raise ValueError("Must enter a website")
 
     company = Company(
         user_id=user_id,
         name=name.strip(),
-        website=website.strip(),
-        headquarters=headquarters.strip(),
+        website=website.strip() if website else None,
+        headquarters=headquarters.strip() if headquarters else None,
     )
     db.session.add(company)
     db.session.commit()

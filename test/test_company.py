@@ -65,11 +65,11 @@ def test_get_company_returns_requested_company(logged_in_client):
 def test_create_company_requires_required_fields(logged_in_client):
     response = logged_in_client.post(
         "/api/companies",
-        json={"name": "Incomplete Company"},
+        json={},
     )
 
     assert response.status_code == 400
-    assert response.get_json()["error"] == "Must enter a headquarters location"
+    assert response.get_json()["error"] == "Must enter a name"
 
 
 def test_update_company_changes_only_requested_fields(logged_in_client):
