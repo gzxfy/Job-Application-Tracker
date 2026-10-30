@@ -1,9 +1,5 @@
 from flask import Blueprint, jsonify, request, session
 import backend.services.Application_services as app_services
-from backend.services.Company_services import (
-    create_company_with_only_name,
-    get_company_by_id,
-)
 
 application_bp = Blueprint("application", __name__)
 
@@ -64,36 +60,13 @@ def create_application():
 
     data = request.get_json() or {}
 
-    position = data.get("position", "").strip()
-    company_name = data.get("company_name", "").strip()
-    company_id = data.get("company_id")
-
-    if not position:
-        return jsonify({"error": "position is required"}), 400
-
     try:
-        if company_name:
-            company = create_company_with_only_name(user_id, company_name)
-        else:
-            company = get_company_by_id(company_id, user_id)
+        application = app_services.create_application_for_user(user_id, data)
+    except app_services.CompanyNotFoundError as error:
+        return jsonify({"error": str(error)}), 404
     except ValueError as error:
         return jsonify({"error": str(error)}), 400
 
-    if not company:
-        return jsonify({"error": "Company not found"}), 404
-
-    application = app_services.create_application(
-        user_id=user_id,
-        company_id=company.id,
-        position=position,
-        job_url=data.get("job_url"),
-        job_description=data.get("job_description"),
-        salary=data.get("salary"),
-        location=data.get("location"),
-        work_type=data.get("work_type"),
-        status=data.get("status", "Applied"),
-        date_applied=data.get("date_applied"),
-    )
     return jsonify(application_response(application)), 201
 
 

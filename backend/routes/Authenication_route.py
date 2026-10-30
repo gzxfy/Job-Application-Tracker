@@ -1,6 +1,5 @@
 import backend.services.Authenication_services as auth_service
 from flask import Blueprint, request, jsonify, session
-from backend.models.User_model import User
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -48,7 +47,7 @@ def current_user():
     if not user_id:
         return jsonify({"error": "Not logged in"}), 401
 
-    user = User.query.get(user_id)
+    user = auth_service.get_user_by_id(user_id)
 
     return jsonify({
         "user": {
@@ -67,7 +66,7 @@ def account():
     if not user_id:
         return jsonify({"error": "Please log in"}), 401
 
-    user = User.query.get(user_id)
+    user = auth_service.get_user_by_id(user_id)
 
     return jsonify({
         "message": "This is your account",

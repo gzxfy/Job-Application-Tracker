@@ -1,48 +1,31 @@
-from backend.models.Company_model import Company
-from backend.extensions import db
+from backend.repositories import company_repository as companies
+
 
 def get_company_by_id(company_id, user_id=None):
-    """Return a company the user can access, including global demo companies."""
     if not company_id:
         return None
-
-    query = Company.query.filter_by(id=company_id)
-    if user_id is not None:
-        query = query.filter(
-            db.or_(Company.user_id == user_id, Company.user_id.is_(None))
-        )
-    return query.first()
+    return companies.get_accessible(company_id, user_id)
 
 
 def get_all_companies(user_id=None, search=None):
-    """List accessible companies, optionally filtered by a name search."""
-    query = Company.query
-    if user_id is not None:
-        query = query.filter(
-            db.or_(Company.user_id == user_id, Company.user_id.is_(None))
-        )
-    if search and search.strip():
-        query = query.filter(Company.name.ilike(f"%{search.strip()}%"))
-    return query.order_by(Company.name).all()
+    return companies.list_accessible(user_id, search.strip() if search else None)
 
 
 def create_company(user_id, name, website=None, headquarters=None):
     if not name or not name.strip():
         raise ValueError("Must enter a name")
 
-    company = Company(
+    company = companies.create(
         user_id=user_id,
         name=name.strip(),
         website=website.strip() if website else None,
         headquarters=headquarters.strip() if headquarters else None,
     )
-    db.session.add(company)
-    db.session.commit()
     return company
 
 
 def update_company(company_id, user_id, name=None, website=None, headquarters=None):
-    company = Company.query.filter_by(id=company_id, user_id=user_id).first()
+    company = companies.get_owned(company_id, user_id)
     if not company:
         return None
 
@@ -59,16 +42,15 @@ def update_company(company_id, user_id, name=None, website=None, headquarters=No
             raise ValueError("Headquarters cannot be empty")
         company.headquarters = headquarters.strip()
 
-    db.session.commit()
+    companies.save(company)
     return company
 
 
 def delete_company(company_id, user_id):
-    company = Company.query.filter_by(id=company_id, user_id=user_id).first()
+    company = companies.get_owned(company_id, user_id)
     if not company:
         return False
-    db.session.delete(company)
-    db.session.commit()
+    companies.delete(company)
     return True
 
 # This will be first used when creating application to store a company with only name
@@ -78,10 +60,8 @@ def create_company_with_only_name(user_id, name):
         raise ValueError("Must enter a name")
 
 
-    company = Company(
+    company = companies.create(
         user_id=user_id,
         name=name.strip(),
     )
-    db.session.add(company)
-    db.session.commit()
     return company

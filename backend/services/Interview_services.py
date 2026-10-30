@@ -1,15 +1,11 @@
 from datetime import datetime
 
-from backend.extensions import db
-from backend.models.Application_model import Application
-from backend.models.Interview_model import Interview
+from backend.repositories import application_repository as applications
+from backend.repositories import interview_repository as interviews
 
 
 def get_owned_application(application_id, user_id):
-    return Application.query.filter_by(
-        id=application_id,
-        user_id=user_id,
-    ).first()
+    return applications.get_by_id(application_id, user_id)
 
 
 def parse_interview_date(value):
@@ -30,10 +26,7 @@ def get_interview_by_id(application_id, interview_id, user_id):
     if not application:
         return None
 
-    return Interview.query.filter_by(
-        id=interview_id,
-        application_id=application_id,
-    ).first()
+    return interviews.get_by_id(application_id, interview_id)
 
 
 def get_all_interviews(application_id, user_id):
@@ -41,7 +34,7 @@ def get_all_interviews(application_id, user_id):
     if not application:
         return None
 
-    return Interview.query.filter_by(application_id=application_id).all()
+    return interviews.list_for_application(application_id)
 
 
 def create_interview(
@@ -62,7 +55,7 @@ def create_interview(
     if not status or not status.strip():
         raise ValueError("Must provide an interview status")
 
-    interview = Interview(
+    interview = interviews.create(
         application_id=application.id,
         company_id=application.company_id,
         interview_date=parse_interview_date(interview_date),
@@ -70,8 +63,6 @@ def create_interview(
         notes=notes.strip() if isinstance(notes, str) else notes,
         status=status.strip(),
     )
-    db.session.add(interview)
-    db.session.commit()
     return interview
 
 
@@ -101,7 +92,7 @@ def update_interview(
             raise ValueError("Interview status cannot be empty")
         interview.status = status.strip()
 
-    db.session.commit()
+    interviews.save(interview)
     return interview
 
 
@@ -110,6 +101,5 @@ def delete_interview(application_id, interview_id, user_id):
     if not interview:
         return False
 
-    db.session.delete(interview)
-    db.session.commit()
+    interviews.delete(interview)
     return True

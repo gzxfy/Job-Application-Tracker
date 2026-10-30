@@ -184,3 +184,21 @@ SQLAlchemy
       |
       v
 Relational Database
+
+
+### Backend layers
+
+Requests flow through `routes -> services -> repositories -> models/database`.
+
+- `backend/routes/`: Flask request parsing, session handling, response serialization,
+  and HTTP status codes. Routes call services rather than querying models.
+- `backend/services/`: validation, ownership rules, password hashing, date parsing,
+  and coordination of application operations. Services do not use Flask request or
+  session objects and delegate database access to repositories.
+- `backend/repositories/`: SQLAlchemy queries, model creation, saving, and deleting.
+  Repositories return models or collections, without HTTP responses. Shared writes
+  roll back the session if persistence fails.
+
+Models continue to define the database schema. Each repository write currently
+commits independently; workflows involving multiple writes are not atomic.
+Schema setup remains in the app factory. Resume persistence is not implemented yet.
