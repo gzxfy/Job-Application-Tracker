@@ -3,12 +3,12 @@ import backend.services.Application_services as app_services
 
 application_bp = Blueprint("application", __name__)
 
-
+# Helper function to get the currently logged-in user's ID from the session.
 def logged_in_user_id():
     # Routes use the session instead of trusting a user ID from the request body.
     return session.get("user_id")
 
-
+# Helper function to format an application object for the API response.
 def application_response(application):
     # Keep response formatting in one place so every application route has the same shape.
     return {

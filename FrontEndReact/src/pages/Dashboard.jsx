@@ -18,6 +18,7 @@ const STATUS_FILTERS = [
 
 const TABS = ["Applications", "Saved Jobs", "Resources"];
 
+// These are temporary placeholder updates for the dashboard.
 const PLACEHOLDER_UPDATES = [
     { id: 1, company: "Northwind Labs", time: "2h ago", status: "Interview", action: "Schedule" },
     { id: 2, company: "Cedar Systems", time: "Yesterday", status: "Applied", action: "Review" },

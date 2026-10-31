@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, session
 
 
 auth_bp = Blueprint('auth', __name__)
-
+# The authenication needs more security for clearing session data if registering while logged in.
 @auth_bp.route('/api/register', methods=['POST'])
 def register():
     # Registration validates credentials, creates the user, and starts a session.
