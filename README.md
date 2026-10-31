@@ -1,204 +1,169 @@
 # Job Application Tracker
 
-A full-stack web application for tracking internship and job applications throughout the hiring process.
+A full-stack application for organizing job and internship applications, company information, interviews, and notes throughout the hiring process.
 
-The project was built to practice full-stack software engineering with a React frontend, Flask REST API, relational database design, authentication, automated testing, and feature-based application development.
+Built to practice React, Flask REST APIs, session authentication, relational database design, and automated testing. The project is under active development; some screens still contain placeholders.
 
-## Overview
+## Application Workflow
 
-Job searching becomes difficult to manage when applications, interviews, notes, company information, and status updates are spread across different websites and documents.
+1. **Register or log in.** The backend authenticates the user and stores their user ID in a Flask session.
+2. **Open the dashboard.** View application counts, search by company or role, and filter applications by status.
+3. **Create an application.** Use the dashboard wizard to select an existing company or create one, then enter the position, posting URL, status, applied date, location, work type, and salary. For Phone Screen or Interview status, the wizard can also save an interview through the API.
+4. **View application details.** Review the job information and progress, update status and overview fields, edit the job description, and add or delete notes.
+5. **Manage the application.** Return to the dashboard or delete an application from its detail page.
+6. **Log out.** The backend clears the current session.
 
-Job Application Tracker provides one place to organize and monitor the entire application process.
+The standalone application form is also available at `/applications/new`.
 
-Users can create applications, track their progress through different stages, store important notes, manage interviews, and view detailed information about each opportunity.
+## Feature Status
 
-## How to Run
+| Area | Current behavior |
+| --- | --- |
+| Authentication | Registration, login, logout, password hashing, and session-based API authentication. |
+| Applications | Create, list, view, update, and delete through the API. Detail-page editing currently covers status, location, work type, salary, and job description. |
+| Dashboard | Application totals, active counts, offers, rejections, text search, and status filters. |
+| Companies | Search and select companies, or create one through the wizard. The API also supports reading, updating, and deleting companies. Fields include name, website, and headquarters. |
+| Notes | Create, read, update, and delete through the API. The current detail screen supports viewing, adding, and deleting notes. |
+| Interviews | Backend CRUD endpoints and wizard creation are implemented. The detail screen still uses mock interviews; its edits are local and are lost on refresh. |
+| Resumes | UI placeholders and a draft model exist. Filename selection does not upload or persist a resume. Viewing, editing, and PDF generation are not implemented. |
+| Activity and updates | Detail-page activity and dashboard updates contain sample content rather than stored events. |
+| Saved Jobs and Resources | Dashboard tabs are placeholders. Saved is available as an application status in the wizard. |
+| AI features | Planned after the core tracking and resume features are complete. |
 
-### Start BackEnd
-- py -m venv .venv
-- .venv\Scripts\Activate.ps1
-- python -m pip install -r requirements.txt
-- python app.py
-
-### Start the Frontend
-- cd FrontEndReact
-- npm install
-- npm run dev
-  
-## Features
-
-### Authentication
-
-- User registration
-- User login
-- User logout
-- Protected application data
-- User-specific job applications
-
-### Application Management
-
-Users can:
-
-- Create applications
-- View applications
-- Edit applications
-- Delete applications
-- Search applications
-- Filter applications by status
-- Store job posting URLs
-- Track application dates
-- Track job locations
-- Track salary information
-- Store job descriptions
-
-Supported application stages include:
-
-- Saved
-- Applied
-- Phone Screen
-- Interview
-- Offer
-- Rejected
-- Withdrawn
-
-### Application Details
-
-Each application has a dedicated detail page containing information related to that specific opportunity.
-
-This includes:
-
-- company information
-- role information
-- application status
-- job description
-- application progress
-- interviews
-- application notes
-- job posting link
-
-### Application Notes
-
-Users can create notes associated with individual applications.
-
-Notes can be used to track information such as:
-
-- recruiter conversations
-- follow-up reminders
-- interview feedback
-- company research
-- important application details
-
-### Interview Tracking
-
-Applications can contain multiple interviews.
-
-This allows users to track different stages of the interview process independently rather than storing a single interview date directly on the application.
-
-### Company Management
-
-Companies are modeled separately from applications.
-
-This allows multiple job applications to reference the same company while keeping company-specific information in one location.
-
-Company information can include:
-
-- company name
-- company website
-- headquarters
-- industry
-
-### Dashboard
-
-The dashboard provides a quick overview of the user's current job search.
-
-It includes:
-
-- total applications
-- active applications
-- offers
-- rejected applications
-- application status filtering
-- application search
-- recent application information
+Application statuses used by the interface are Saved, Applied, Phone Screen, Interview, Offer, Rejected, and Withdrawn. Available status choices currently differ between the wizard, standalone form, and dashboard filters.
 
 ## Tech Stack
 
-### Frontend
+- **Frontend:** React, React Router, JavaScript, Vite, Tailwind CSS.
+- **Backend:** Python, Flask, Flask-SQLAlchemy, Werkzeug password hashing.
+- **Database:** SQLite by default, accessed through SQLAlchemy.
+- **Testing:** pytest and the Flask test client; ESLint for frontend checks.
 
-- React
-- JavaScript
-- HTML
-- CSS
+## Local Setup
+
+Use Python with `venv` support, Node.js, and npm. The commands below use Windows PowerShell and start from the project root.
 
 ### Backend
 
-- Python
-- Flask
-- REST APIs
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
 
-### Database
+Create a `.env` file in the project root with a private session secret:
 
-- SQLAlchemy
-- Relational database
+```dotenv
+SECRET_KEY=replace-with-a-long-random-secret
+```
 
-### Testing
+`DATABASE_URL` is optional. When omitted, the backend uses `app.db` in the project root. If setting a SQLite URL explicitly, use an absolute path to avoid confusion about Flask's instance-relative database paths.
 
-- pytest
-- Flask test client
-- API and backend functionality tests
+```powershell
+python app.py
+```
 
-### Development Tools
+The development backend runs at `http://localhost:5000`. Startup creates missing tables and applies a limited set of legacy application-column updates; this is not a versioned migration system.
 
-- Git
-- GitHub
-- VS Code
-- Cursor
-- Postman
+### Frontend
 
-## Future Ideas
-- activity timeline
-- company information enrichment
-- resume management
-- AI-assisted resume tailoring
-- interview preparation tools
-- application analytics
-- notifications and follow-up reminders
-- Remember Me and forgot password 
+Open a second terminal:
 
-## Architecture
+```powershell
+cd FrontEndReact
+npm install
+npm run dev
+```
 
-The application follows a full-stack architecture where React handles the user interface and communicates with a Flask backend through HTTP requests.
+Open the local URL printed by Vite, usually `http://localhost:5173`. Vite proxies `/api` requests to the Flask backend on port 5000, so keep both processes running.
+
+These instructions run local development servers. Production hosting and routing for the built frontend are not configured here.
+
+## Backend Architecture
 
 ```text
-React Frontend
+React frontend
       |
       | HTTP / JSON
       v
-Flask REST API
+Routes
       |
       v
-Service / Business Logic
+Services
       |
       v
-SQLAlchemy
+Repositories
       |
       v
-Relational Database
+SQLAlchemy models / database
+```
 
+| Layer | Responsibility |
+| --- | --- |
+| `backend/routes/` | Parse HTTP requests, read sessions, call services, serialize responses, and choose HTTP status codes. |
+| `backend/services/` | Validate input, check ownership, hash passwords, parse dates, and coordinate business workflows. |
+| `backend/repositories/` | Query records, construct models, save changes, and delete records using SQLAlchemy. |
+| `backend/models/` | Define database tables, columns, foreign keys, and ORM relationships. |
 
-### Backend layers
+Routes call services, and services delegate database access to repositories. Services do not depend on Flask request or session objects. Shared repository writes roll back the database session when persistence fails.
 
-Requests flow through `routes -> services -> repositories -> models/database`.
+Each repository write currently commits independently. A workflow that creates a company, application, and interview is not yet one atomic transaction. Database initialization remains in `app.py`.
 
-- `backend/routes/`: Flask request parsing, session handling, response serialization,
-  and HTTP status codes. Routes call services rather than querying models.
-- `backend/services/`: validation, ownership rules, password hashing, date parsing,
-  and coordination of application operations. Services do not use Flask request or
-  session objects and delegate database access to repositories.
-- `backend/repositories/`: SQLAlchemy queries, model creation, saving, and deleting.
-  Repositories return models or collections, without HTTP responses. Shared writes
-  roll back the session if persistence fails.
+### Data Relationships
 
-Models continue to define the database schema. Each repository write currently
-commits independently; workflows involving multiple writes are not atomic.
-Schema setup remains in the app factory. Resume persistence is not implemented yet.
+- A user can own multiple applications and user-created companies.
+- Each application references one user and one company.
+- A company can be referenced by multiple applications. Companies without an owner are treated as global demo records.
+- An application can have multiple notes and interviews.
+- Each interview also stores a company reference.
+- Resume storage is planned around one resume per application; the draft model is not yet integrated into the running backend.
+
+Foreign-key declarations alone do not provide complete deletion behavior. Child-record cleanup and consistent foreign-key enforcement still need attention.
+
+## Project Structure
+
+```text
+Job-Application-Tracker/
+|-- app.py                  # Flask app factory, configuration, and startup
+|-- backend/
+|   |-- extensions.py       # Shared database extension
+|   |-- routes/             # HTTP layer
+|   |-- services/           # Business logic
+|   |-- repositories/       # Database access and persistence
+|   |-- models/             # Database schema
+|   `-- utils/              # Validation helpers
+|-- FrontEndReact/
+|   `-- src/
+|       |-- pages/          # Authentication, dashboard, and application pages
+|       `-- components/     # Forms, wizard, modals, and display components
+|-- test/                   # Backend and API tests
+|-- conftest.py             # Test app, database, and login fixtures
+`-- requirements.txt        # Python dependencies
+```
+
+## Verification
+
+With the Python environment active, run backend tests from the project root:
+
+```powershell
+python -m pytest
+```
+
+Tests use an in-memory SQLite database. Importing `app.py` also constructs the default app and runs its startup schema initialization, so normal test startup can still touch the configured local database.
+
+Run frontend checks from `FrontEndReact`:
+
+```powershell
+npm run lint
+npm run build
+```
+
+## Next Steps
+
+1. Fix deletion cleanup, company ownership checks during application updates, and missing input validation.
+2. Add versioned database migrations and atomic transactions for workflows involving multiple writes.
+3. Connect the interview detail screen to the existing API and align its field names with backend responses.
+4. Implement private resume upload/download and one editable resume template. Store structured content for created resumes and generate PDFs as exports.
+5. Add note editing in the interface, fuller application editing, real activity history, and follow-up reminders.
+6. Complete Saved Jobs filtering and add password recovery, export, and pagination.
+7. Explore AI-assisted resume tailoring and interview preparation after the core features work reliably.

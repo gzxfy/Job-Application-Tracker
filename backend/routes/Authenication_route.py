@@ -38,7 +38,7 @@ def login():
     except ValueError as e:
         return jsonify({'error': str(e)}), 401
 
-
+# Route to get the current user's information from the session.
 @auth_bp.route('/api/me', methods=['GET'])
 def current_user():
     # Return the current session user's public account fields.
@@ -58,6 +58,7 @@ def current_user():
     }), 200
 
 
+# Route to get the current user's account information from the session.
 @auth_bp.route('/api/account', methods=['GET'])
 def account():
     # Simple protected account endpoint used to verify session authentication.
